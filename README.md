@@ -1,5 +1,5 @@
-**#🎨 Arte CIMA: Sistema de Gestión Humano y Creativo**
-Arte CIMA es una plataforma integral desarrollada para la Corporación Arte CIMA en Bucaramanga. Este software trasciende la simple administración de datos; es una herramienta diseñada para sostener un ecosistema de formación artística inclusiva (artes plásticas, escénicas y circenses) en una entidad sin ánimo de lucro.
+#🎨 Arte CIMA: Sistema de Gestión Humano y Creativo#
+**Arte CIMA** es una plataforma integral desarrollada para la Corporación Arte CIMA en Bucaramanga. Este software trasciende la simple administración de datos; es una herramienta diseñada para sostener un ecosistema de formación artística inclusiva (artes plásticas, escénicas y circenses) en una entidad sin ánimo de lucro.
 
 "Diseño para humanos, con la paciencia de quien espera a que una acuarela seque."
 
