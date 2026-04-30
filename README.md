@@ -53,7 +53,7 @@ Seguimiento de **Becas** y **Convocatorias** (MinCultura, IMCT). El software vin
 ## 🛡️ Seguridad y Protección de Datos
 Para honrar la confianza de los miembros de la corporación, el sistema implementa:
 
-**Seguridad Criptográfica:** Hasheo de credenciales mediante BCrypt, asegurando que la información de acceso nunca sea vulnerable, ni siquiera en la base de datos.
+**Seguridad Criptográfica:** Hasheo unidireccional de credenciales mediante BCrypt, asegurando que la información de acceso nunca sea vulnerable, ni siquiera en la base de datos.
 
 **Tratamiento de Datos Sensibles:** Estructura preparada para cumplir con estándares de privacidad, protegiendo la identidad y condición de los beneficiarios.
 
