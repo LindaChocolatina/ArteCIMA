@@ -55,7 +55,7 @@ Para honrar la confianza de los miembros de la corporación, el sistema implemen
 
 **Seguridad Criptográfica:** Hasheo de credenciales mediante BCrypt, asegurando que la información de acceso nunca sea vulnerable, ni siquiera en la base de datos.
 
-** Tratamiento de Datos Sensibles:** Estructura preparada para cumplir con estándares de privacidad, protegiendo la identidad y condición de los beneficiarios.
+**Tratamiento de Datos Sensibles:** Estructura preparada para cumplir con estándares de privacidad, protegiendo la identidad y condición de los beneficiarios.
 
 ## 🚀 Evolución del Proyecto (Roadmap)
 Este organismo digital está diseñado para seguir creciendo. Las próximas fases de desarrollo incluyen:
