@@ -1,4 +1,4 @@
-#🎨 Arte CIMA: Sistema de Gestión Humano y Creativo
+**#🎨 Arte CIMA: Sistema de Gestión Humano y Creativo**
 Arte CIMA es una plataforma integral desarrollada para la Corporación Arte CIMA en Bucaramanga. Este software trasciende la simple administración de datos; es una herramienta diseñada para sostener un ecosistema de formación artística inclusiva (artes plásticas, escénicas y circenses) en una entidad sin ánimo de lucro.
 
 "Diseño para humanos, con la paciencia de quien espera a que una acuarela seque."
@@ -48,6 +48,20 @@ Lenguaje: Java
 Persistencia: PostgreSQL
 
 Patrón de Diseño: Arquitectura por capas (Business, Interface, Module, Connection).
+
+🛡️ Seguridad y Protección de Datos
+Para honrar la confianza de los miembros de la corporación, el sistema implementa:
+
+Seguridad Criptográfica: Hasheo de credenciales mediante BCrypt, asegurando que la información de acceso nunca sea vulnerable, ni siquiera en la base de datos.
+
+Tratamiento de Datos Sensibles: Estructura preparada para cumplir con estándares de privacidad, protegiendo la identidad y condición de los beneficiarios.
+
+🚀 Evolución del Proyecto (Roadmap)
+Este organismo digital está diseñado para seguir creciendo. Las próximas fases de desarrollo incluyen:
+
+Implementación de RBAC (Control de Acceso Basado en Roles): Creación de niveles de permisos diferenciados (Administrador, Instructor, Consulta) para blindar la integridad de los datos contables y personales.
+
+Módulo de Reportes Automatizados: Generación de certificados de asistencia y reportes de impacto para las entidades financiadoras (MinCultura/IMCT).
 
 Administración DB: pgAdmin.
 
