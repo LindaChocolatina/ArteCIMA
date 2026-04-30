@@ -35,6 +35,7 @@ Administración de **Talleres** clasificados por tipo de arte y **Grupos** con c
 Seguimiento de **Becas** y **Convocatorias** (MinCultura, IMCT). El software vincula automáticamente el beneficio con el estudiante, permitiendo una gestión clara de la gratuidad y los apoyos económicos.
 
 **3. Operación y Contabilidad**
+
 **Asistencia Diaria:** Registro preciso por grupo y fecha.
 
 **Pagos a Instructores:** Vinculación directa con los movimientos contables de la corporación para una auditoría transparente.
