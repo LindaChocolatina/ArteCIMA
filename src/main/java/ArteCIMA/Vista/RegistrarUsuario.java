@@ -1,238 +1,217 @@
 package ArteCIMA.Vista;
 
-import ArteCIMA.DAO.RegistrarUsuarioDAO;
-import org.mindrot.jbcrypt.BCrypt;
-import javax.swing.JOptionPane;
+import ArteCIMA.Controlador.ControladorUsuario;
+import ArteCIMA.Modelo.Modulo;
+import ArteCIMA.Modelo.SesionUsuario;
+import ArteCIMA.Modelo.Usuario;
+import ArteCIMA.Util.MensajesUI;
+import ArteCIMA.Util.PermisosUI;
+import ArteCIMA.Util.TemaCIMA;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
+/**
+ * Registro de usuarios — formulario vertical completo y funcional.
+ */
+public class RegistrarUsuario extends JFrame {
 
-public class RegistrarUsuario extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(RegistrarUsuario.class.getName());
+    private static final int ANCHO_VENTANA = 420;
+    private static final int ANCHO_CAMPO = 300;
+
+    private final ControladorUsuario controlador = new ControladorUsuario();
+
+    private final JTextField txtNombre = new JTextField();
+    private final JTextField txtUsuario = new JTextField();
+    private final JTextField txtCorreo = new JTextField();
+    private final JPasswordField txtClave1 = new JPasswordField();
+    private final JPasswordField txtClave2 = new JPasswordField();
+    private final JComboBox<String> comboRol = new JComboBox<>(new String[]{
+        "Administrador", "Coordinador", "Instructor", "Administrativo", "Contabilidad", "Auxiliar"
+    });
+    private final JButton btnRegistrarUsuario = new JButton("Registrar");
+    private final JButton btnCancelar = new JButton("Cancelar");
 
     public RegistrarUsuario() {
-        initComponents();
-        this.setLocationRelativeTo(null);
+        construirInterfaz();
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setTitle("ArteCIMA - Registrar Usuario");
+        TemaCIMA.aplicarIcono(this);
+        setLocationRelativeTo(null);
+
+        if (!PermisosUI.verificarAccesoModulo(this, Modulo.REGISTRAR_USUARIO)) {
+            java.awt.EventQueue.invokeLater(this::dispose);
+            return;
+        }
+        btnRegistrarUsuario.setEnabled(SesionUsuario.puedeRegistrarUsuarios());
+    }
+
+    private void construirInterfaz() {
+        JPanel tarjeta = TemaCIMA.crearTarjetaFlotante();
+        tarjeta.setLayout(new BoxLayout(tarjeta, BoxLayout.Y_AXIS));
+        tarjeta.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                tarjeta.getBorder(),
+                new EmptyBorder(24, 40, 28, 40)));
+
+        tarjeta.add(crearEncabezado());
+        tarjeta.add(Box.createVerticalStrut(12));
+        tarjeta.add(crearFormulario());
+
+        JPanel fondo = TemaCIMA.crearFondoArtistico();
+        fondo.setLayout(new GridBagLayout());
+        GridBagConstraints gbcFondo = new GridBagConstraints();
+        gbcFondo.gridx = 0;
+        gbcFondo.gridy = 0;
+        fondo.add(tarjeta, gbcFondo);
+
+        setContentPane(fondo);
+        pack();
         setResizable(false);
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    private JPanel crearEncabezado() {
+        JPanel header = new JPanel();
+        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+        header.setOpaque(false);
+        header.setAlignmentX(Component.CENTER_ALIGNMENT);
+        header.setMaximumSize(new Dimension(ANCHO_VENTANA, 160));
 
-        jLabel7 = new javax.swing.JLabel();
-        txtNuevoUsuario2 = new javax.swing.JTextField();
-        jLabel10 = new javax.swing.JLabel();
-        txtNombre1 = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        txtClave2 = new javax.swing.JPasswordField();
-        btnRegistrarUsuario = new javax.swing.JButton();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        btnCancelar = new javax.swing.JButton();
-        txtClave1 = new javax.swing.JPasswordField();
-        jLabel9 = new javax.swing.JLabel();
-        txtCorreo = new javax.swing.JTextField();
-        comboRol = new javax.swing.JComboBox<>();
-        txtNombre = new javax.swing.JTextField();
-        txtUsuario = new javax.swing.JTextField();
+        ImageIcon logo = TemaCIMA.logoEscalado(76);
+        if (logo != null) {
+            JLabel lblLogo = new JLabel(logo);
+            lblLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
+            header.add(lblLogo);
+            header.add(Box.createVerticalStrut(8));
+        }
 
-        jLabel7.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        jLabel7.setText("Rol de usuario:");
+        JLabel lblTitulo = new JLabel("Registro de Usuarios");
+        lblTitulo.setFont(TemaCIMA.FUENTE_SUBTITULO);
+        lblTitulo.setForeground(TemaCIMA.AZUL_REY);
+        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        header.add(lblTitulo);
+        header.add(Box.createVerticalStrut(6));
 
-        txtNuevoUsuario2.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
+        JLabel franja = new JLabel(" ");
+        franja.setAlignmentX(Component.CENTER_ALIGNMENT);
+        franja.setMaximumSize(new Dimension(110, 4));
+        franja.setPreferredSize(new Dimension(110, 4));
+        franja.setOpaque(true);
+        franja.setBackground(TemaCIMA.AMARILLO);
+        header.add(franja);
 
-        jLabel10.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        jLabel10.setText("Nombre completo:");
+        return header;
+    }
 
-        txtNombre1.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
+    private JPanel crearFormulario() {
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setOpaque(true);
+        form.setBackground(new java.awt.Color(254, 252, 248));
+        form.setAlignmentX(Component.CENTER_ALIGNMENT);
+        form.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                new TemaCIMA.BordeRedondeado(TemaCIMA.BORDE_SUAVE, 16),
+                new EmptyBorder(20, 22, 20, 22)));
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
+        gbc.insets = new Insets(0, 0, 4, 0);
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setPreferredSize(new java.awt.Dimension(533, 412));
-        jPanel1.setRequestFocusEnabled(false);
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(152, 136, -1, -1));
+        TemaCIMA.estilizarCampo(txtNombre);
+        TemaCIMA.estilizarCampo(txtUsuario);
+        TemaCIMA.estilizarCampo(txtCorreo);
+        TemaCIMA.estilizarCampo(txtClave1);
+        TemaCIMA.estilizarCampo(txtClave2);
+        TemaCIMA.estilizarCombo(comboRol);
 
-        jLabel3.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        jLabel3.setText("Contraseña:");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(142, 304, -1, -1));
+        agregarFila(form, gbc, "Nombre completo:", txtNombre);
+        agregarFila(form, gbc, "Usuario:", txtUsuario);
+        agregarFila(form, gbc, "Correo:", txtCorreo);
+        agregarFila(form, gbc, "Contraseña:", txtClave1);
+        agregarFila(form, gbc, "Confirmar contraseña:", txtClave2);
+        agregarFila(form, gbc, "Rol:", comboRol);
 
-        jLabel4.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        jLabel4.setText("Confirmación contraseña:");
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(38, 350, -1, -1));
+        gbc.gridy++;
+        gbc.insets = new Insets(14, 0, 0, 0);
 
-        txtClave2.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        txtClave2.setPreferredSize(new java.awt.Dimension(64, 22));
-        jPanel1.add(txtClave2, new org.netbeans.lib.awtextra.AbsoluteConstraints(268, 347, 136, -1));
-
-        btnRegistrarUsuario.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        btnRegistrarUsuario.setText("Registrar usuario");
+        JPanel filaBotones = new JPanel(new java.awt.GridLayout(1, 2, 12, 0));
+        filaBotones.setOpaque(false);
+        TemaCIMA.estilizarBotonExito(btnRegistrarUsuario);
+        TemaCIMA.estilizarBotonPeligro(btnCancelar);
         btnRegistrarUsuario.addActionListener(this::btnRegistrarUsuarioActionPerformed);
-        jPanel1.add(btnRegistrarUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(96, 401, -1, -1));
+        btnCancelar.addActionListener(e -> dispose());
+        filaBotones.add(btnRegistrarUsuario);
+        filaBotones.add(btnCancelar);
+        form.add(filaBotones, gbc);
 
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/loguito.jpeg"))); // NOI18N
-        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(193, 28, -1, -1));
-
-        jLabel6.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        jLabel6.setText("Rol de usuario:");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 143, -1, -1));
-
-        jLabel2.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        jLabel2.setText("Nombre completo:");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(96, 181, -1, -1));
-
-        jLabel8.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        jLabel8.setText("Correo:");
-        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(174, 263, -1, -1));
-
-        btnCancelar.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        btnCancelar.setText("Cancelar");
-        btnCancelar.addActionListener(this::btnCancelarActionPerformed);
-        jPanel1.add(btnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(268, 401, 136, -1));
-
-        txtClave1.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        txtClave1.setPreferredSize(new java.awt.Dimension(64, 22));
-        jPanel1.add(txtClave1, new org.netbeans.lib.awtextra.AbsoluteConstraints(268, 301, 136, -1));
-
-        jLabel9.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        jLabel9.setText("Nombre de usuario:");
-        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 220, -1, -1));
-
-        txtCorreo.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
-        txtCorreo.setPreferredSize(new java.awt.Dimension(64, 22));
-        jPanel1.add(txtCorreo, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 260, 133, -1));
-
-        comboRol.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
-        comboRol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecciona", "Administrador", "Coordinador", "Instructor", "Administrativo", "Contabilidad", "Auxiliar", " " }));
-        jPanel1.add(comboRol, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 140, -1, -1));
-
-        txtNombre.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        jPanel1.add(txtNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 180, 133, 22));
-
-        txtUsuario.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        txtUsuario.setPreferredSize(new java.awt.Dimension(64, 22));
-        jPanel1.add(txtUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 220, 133, -1));
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 507, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void btnRegistrarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarUsuarioActionPerformed
-    String rol = comboRol.getSelectedItem().toString();
-    String nombreCompleto = txtNombre.getText();
-    String usuario = txtUsuario.getText();
-    String correo = txtCorreo.getText();
-
-    String pass1 = String.valueOf(txtClave1.getPassword());
-    String pass2 = String.valueOf(txtClave2.getPassword());
-
-    if (rol.equals("Selecciona")) {
-        JOptionPane.showMessageDialog(this, "Debes seleccionar un rol");
-        return;
+        return form;
     }
 
-    if (nombreCompleto.isEmpty() || usuario.isEmpty() || correo.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios");
-        return;
+    private void agregarFila(JPanel form, GridBagConstraints gbc, String etiqueta, JComponent campo) {
+        gbc.insets = new Insets(gbc.gridy == 0 ? 0 : 10, 0, 4, 0);
+        JLabel lbl = TemaCIMA.crearEtiquetaCampo(etiqueta);
+        form.add(lbl, gbc);
+
+        gbc.gridy++;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        campo.setPreferredSize(new Dimension(ANCHO_CAMPO, 38));
+        form.add(campo, gbc);
+
+        gbc.gridy++;
     }
 
-    if (!pass1.equals(pass2)) {
-        JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden");
-        return;
-    }
+    private void btnRegistrarUsuarioActionPerformed(java.awt.event.ActionEvent evt) {
+        String nombre = txtNombre.getText().trim();
+        String usuario = txtUsuario.getText().trim();
+        String correo = txtCorreo.getText().trim();
+        String clave1 = String.valueOf(txtClave1.getPassword());
+        String clave2 = String.valueOf(txtClave2.getPassword());
+        String rol = (String) comboRol.getSelectedItem();
 
-    String hash = BCrypt.hashpw(pass1, BCrypt.gensalt(12));
-    
-    RegistrarUsuarioDAO dao = new RegistrarUsuarioDAO();
-    boolean ok = dao.registrarUsuario(rol, nombreCompleto, usuario, correo, hash);
-
-    if (ok) {
-        JOptionPane.showMessageDialog(this,
-                "Usuario registrado con éxito",
-                "Registro exitoso",
-                JOptionPane.INFORMATION_MESSAGE);
-
-        PagPrincipal pag = new PagPrincipal();
-        pag.setVisible(true);
-        pag.setLocationRelativeTo(null);
-
-          this.dispose();
-
-    } else {
-        JOptionPane.showMessageDialog(this,
-                "Error al registrar usuario.",
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
+        if (nombre.isEmpty() || usuario.isEmpty() || correo.isEmpty() || clave1.isEmpty()) {
+            MensajesUI.advertencia(this, "Complete todos los campos.");
+            return;
         }
-    }//GEN-LAST:event_btnRegistrarUsuarioActionPerformed
-
-    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-    this.dispose(); 
-
-    }//GEN-LAST:event_btnCancelarActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        if (!clave1.equals(clave2)) {
+            MensajesUI.advertencia(this, "Las contraseñas no coinciden.");
+            return;
         }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new RegistrarUsuario().setVisible(true));
+        Usuario u = new Usuario();
+        u.setNombreCompleto(nombre);
+        u.setUsuario(usuario);
+        u.setCorreo(correo);
+        u.setRol(rol);
+
+        if (controlador.registrar(u, clave1, clave2)) {
+            MensajesUI.exito(this, "Usuario registrado correctamente.");
+            limpiarCampos();
+        } else {
+            MensajesUI.error(this, controlador.getUltimoMensaje());
+        }
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCancelar;
-    private javax.swing.JButton btnRegistrarUsuario;
-    private javax.swing.JComboBox<String> comboRol;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPasswordField txtClave1;
-    private javax.swing.JPasswordField txtClave2;
-    private javax.swing.JTextField txtCorreo;
-    private javax.swing.JTextField txtNombre;
-    private javax.swing.JTextField txtNombre1;
-    private javax.swing.JTextField txtNuevoUsuario2;
-    private javax.swing.JTextField txtUsuario;
-    // End of variables declaration//GEN-END:variables
+    private void limpiarCampos() {
+        txtNombre.setText("");
+        txtUsuario.setText("");
+        txtCorreo.setText("");
+        txtClave1.setText("");
+        txtClave2.setText("");
+        comboRol.setSelectedIndex(0);
+    }
 }

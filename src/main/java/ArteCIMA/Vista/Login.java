@@ -1,131 +1,170 @@
 package ArteCIMA.Vista;
 
-import ArteCIMA.DAO.LoginDAO;
-import ArteCIMA.Modelo.Usuario;
-import javax.swing.JOptionPane;
-public class Login extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
+import ArteCIMA.Controlador.LoginControlador;
+import ArteCIMA.Util.MensajesUI;
+import ArteCIMA.Util.TemaCIMA;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+/**
+ * Login — tarjeta vertical artística CIMA, alineada con el registro de usuarios.
+ */
+public class Login extends JFrame {
+
+    private static final int ANCHO_CAMPO = 300;
+
+    private final LoginControlador controller;
+    private final JTextField txtUsuario = new JTextField();
+    private final JPasswordField txtClave = new JPasswordField();
+    private final JButton btnIngresar = new JButton("Iniciar sesión");
 
     public Login() {
-        initComponents();
-        this.setLocationRelativeTo(null);
+        controller = new LoginControlador(this);
+        construirInterfaz();
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("ArteCIMA - Iniciar sesión");
+        TemaCIMA.aplicarIcono(this);
+        setLocationRelativeTo(null);
+        getRootPane().setDefaultButton(btnIngresar);
+    }
+
+    private void construirInterfaz() {
+        JPanel tarjeta = TemaCIMA.crearTarjetaFlotante();
+        tarjeta.setLayout(new BoxLayout(tarjeta, BoxLayout.Y_AXIS));
+        tarjeta.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                tarjeta.getBorder(),
+                new EmptyBorder(28, 40, 32, 40)));
+
+        tarjeta.add(crearEncabezado());
+        tarjeta.add(Box.createVerticalStrut(14));
+        tarjeta.add(crearFormulario());
+
+        JPanel fondo = TemaCIMA.crearFondoArtistico();
+        fondo.setLayout(new GridBagLayout());
+        GridBagConstraints gbcFondo = new GridBagConstraints();
+        gbcFondo.gridx = 0;
+        gbcFondo.gridy = 0;
+        fondo.add(tarjeta, gbcFondo);
+
+        setContentPane(fondo);
+        pack();
         setResizable(false);
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    private JPanel crearEncabezado() {
+        JPanel header = new JPanel();
+        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+        header.setOpaque(false);
+        header.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        txtUsuario = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        btnIngresar = new javax.swing.JButton();
-        txtClave = new javax.swing.JPasswordField();
-        jLabel4 = new javax.swing.JLabel();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 6, -1, 145));
-
-        jLabel2.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        jLabel2.setText("Usuario:");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 160, -1, -1));
-
-        txtUsuario.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        jPanel1.add(txtUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 160, 156, -1));
-
-        jLabel3.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        jLabel3.setText("Contraseña:");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 210, -1, -1));
-
-        btnIngresar.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
-        btnIngresar.setText("Iniciar sesión");
-        btnIngresar.addActionListener(this::btnIngresarActionPerformed);
-        jPanel1.add(btnIngresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 250, 182, -1));
-        jPanel1.add(txtClave, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 210, 156, -1));
-
-        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/loguito.jpeg"))); // NOI18N
-        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 50, -1, -1));
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 509, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
-  
-    String user = txtUsuario.getText();
-    String pass = String.valueOf(txtClave.getPassword());
-  
-    if (user.isEmpty() || pass.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Completa todos los campos.");
-        return;
-    }
-
-    LoginDAO dao = new LoginDAO();
-    Usuario u = dao.autenticar(user, pass);
-
-    if (u != null) {
-        JOptionPane.showMessageDialog(this, "Bienvenido " + u.getNombreCompleto() + "!");
-        new PagPrincipal().setVisible(true);
-        this.dispose();
-    } else {
-        JOptionPane.showMessageDialog(this, "Credenciales incorrectas");
-    }
-    }//GEN-LAST:event_btnIngresarActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        ImageIcon logo = TemaCIMA.logoEscalado(100);
+        if (logo != null) {
+            JLabel lblLogo = new JLabel(logo);
+            lblLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
+            header.add(lblLogo);
+            header.add(Box.createVerticalStrut(10));
         }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Login().setVisible(true));
+        JLabel lblEslogan = new JLabel("Arte para todos");
+        lblEslogan.setFont(TemaCIMA.FUENTE_ESLOGAN);
+        lblEslogan.setForeground(TemaCIMA.AZUL_REY);
+        lblEslogan.setAlignmentX(Component.CENTER_ALIGNMENT);
+        header.add(lblEslogan);
+        header.add(Box.createVerticalStrut(8));
+
+        JLabel franja = new JLabel(" ");
+        franja.setAlignmentX(Component.CENTER_ALIGNMENT);
+        franja.setMaximumSize(new Dimension(100, 4));
+        franja.setPreferredSize(new Dimension(100, 4));
+        franja.setOpaque(true);
+        franja.setBackground(TemaCIMA.AMARILLO);
+        header.add(franja);
+
+        return header;
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnIngresar;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPasswordField txtClave;
-    private javax.swing.JTextField txtUsuario;
-    // End of variables declaration//GEN-END:variables
+    private JPanel crearFormulario() {
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setOpaque(true);
+        form.setBackground(new java.awt.Color(254, 252, 248));
+        form.setAlignmentX(Component.CENTER_ALIGNMENT);
+        form.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                new TemaCIMA.BordeRedondeado(TemaCIMA.BORDE_SUAVE, 16),
+                new EmptyBorder(22, 22, 22, 22)));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
+
+        TemaCIMA.estilizarCampo(txtUsuario);
+        TemaCIMA.estilizarCampo(txtClave);
+
+        agregarFila(form, gbc, "Usuario:", txtUsuario);
+        agregarFila(form, gbc, "Contraseña:", txtClave);
+
+        gbc.gridy++;
+        gbc.insets = new Insets(16, 0, 0, 0);
+
+        btnIngresar.setPreferredSize(new Dimension(ANCHO_CAMPO, 42));
+        TemaCIMA.estilizarBotonPrimario(btnIngresar);
+        btnIngresar.addActionListener(e -> controller.iniciarSesion());
+        form.add(btnIngresar, gbc);
+
+        return form;
+    }
+
+    private void agregarFila(JPanel form, GridBagConstraints gbc, String etiqueta, JComponent campo) {
+        gbc.insets = new Insets(gbc.gridy == 0 ? 0 : 12, 0, 4, 0);
+        JLabel lbl = TemaCIMA.crearEtiquetaCampo(etiqueta);
+        form.add(lbl, gbc);
+
+        gbc.gridy++;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        campo.setPreferredSize(new Dimension(ANCHO_CAMPO, 38));
+        form.add(campo, gbc);
+
+        gbc.gridy++;
+    }
+
+    public String getUsuario() {
+        return txtUsuario.getText();
+    }
+
+    public String getClave() {
+        return String.valueOf(txtClave.getPassword());
+    }
+
+    public void mostrarError(String mensaje) {
+        MensajesUI.error(this, mensaje);
+    }
+
+    public void mostrarBienvenida(String nombreCompleto) {
+        MensajesUI.exito(this, "Bienvenido " + nombreCompleto + "!");
+    }
+
+    public void abrirPagPrincipal() {
+        PagPrincipal pag = new PagPrincipal();
+        pag.setVisible(true);
+        pag.setLocationRelativeTo(null);
+    }
+
+    public void cerrar() {
+        dispose();
+    }
 }

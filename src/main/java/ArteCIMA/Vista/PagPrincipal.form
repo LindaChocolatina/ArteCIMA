@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="title" type="java.lang.String" value="Arte CIMA - Men&#xfa; principal"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
@@ -46,59 +47,94 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="1" attributes="0">
-                  <EmptySpace pref="146" max="32767" attributes="0"/>
+              <Group type="102" attributes="0">
+                  <EmptySpace min="80" max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <Component id="btnInsertarEstudiante" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="btnInsertarInstructor" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="btnInsertarTaller" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="btnConsultarEstudiantes" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="btnConsultarInstructores" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="btnConsultarTalleres" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="368" max="-2" attributes="0"/>
+                      <Group type="102" alignment="1" attributes="0">
                           <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="280" pref="280" max="280" attributes="0"/>
                       </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="396" max="-2" attributes="0"/>
-                          <Component id="jLabel2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="310" pref="310" max="310" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="320" pref="320" max="320" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="btnEstudiantes" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="18" pref="18" max="18" attributes="0"/>
+                          <Component id="btnInstructores" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="18" pref="18" max="18" attributes="0"/>
+                          <Component id="btnTalleres" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="18" pref="18" max="18" attributes="0"/>
+                          <Component id="btnGrupos" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="btnAcudientes" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="18" pref="18" max="18" attributes="0"/>
+                          <Component id="btnBecas" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="18" pref="18" max="18" attributes="0"/>
+                          <Component id="btnAsistencias" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="18" pref="18" max="18" attributes="0"/>
+                          <Component id="btnMetodos" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="btnCorporaciones" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="18" pref="18" max="18" attributes="0"/>
+                          <Component id="btnConvocatorias" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="18" pref="18" max="18" attributes="0"/>
+                          <Component id="btnAlianzas" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="18" pref="18" max="18" attributes="0"/>
+                          <Component id="btnMovimientos" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="1" attributes="0">
+                          <Component id="btnPagosInstructor" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="18" pref="18" max="18" attributes="0"/>
+                          <Component id="btnRegistrarUsuario" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace min="-2" pref="148" max="-2" attributes="0"/>
-              </Group>
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="615" max="-2" attributes="0"/>
-                  <Component id="btnRegistrarUsuario" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace min="80" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="211" max="-2" attributes="0"/>
+                  <EmptySpace min="80" pref="80" max="80" attributes="0"/>
                   <Component id="jLabel1" min="-2" pref="144" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
+                  <EmptySpace min="18" pref="18" max="18" attributes="0"/>
+                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="30" pref="30" max="30" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="btnInsertarEstudiante" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="btnInsertarInstructor" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="btnInsertarTaller" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="btnConsultarEstudiantes" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="btnConsultarInstructores" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="btnConsultarTalleres" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnEstudiantes" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnInstructores" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnTalleres" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnGrupos" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="56" max="-2" attributes="0"/>
-                  <Component id="btnRegistrarUsuario" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="174" max="32767" attributes="0"/>
+                  <EmptySpace min="22" pref="22" max="22" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="btnAcudientes" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnBecas" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnAsistencias" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnMetodos" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="22" pref="22" max="22" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="btnCorporaciones" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnConvocatorias" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnAlianzas" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnMovimientos" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="22" pref="22" max="22" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="btnPagosInstructor" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnRegistrarUsuario" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace pref="120" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -119,74 +155,162 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="66" green="33" red="0" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Arte para todos"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="text" type="java.lang.String" value="Arte para todos"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="btnInsertarEstudiante">
+        <Component class="javax.swing.JLabel" name="jLabel3">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Gill Sans Ultra Bold Condensed" size="22" style="0"/>
+            </Property>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="66" green="33" red="0" type="rgb"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="M&#xf3;dulos del sistema"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnEstudiantes">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="NSimSun" size="14" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Registrar estudiante"/>
+            <Property name="text" type="java.lang.String" value="Estudiantes"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnInsertarEstudianteActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEstudiantesActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="btnInsertarInstructor">
+        <Component class="javax.swing.JButton" name="btnInstructores">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="NSimSun" size="14" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Registrar instructor"/>
+            <Property name="text" type="java.lang.String" value="Instructores"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnInsertarInstructorActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnInstructoresActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="btnInsertarTaller">
+        <Component class="javax.swing.JButton" name="btnTalleres">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="NSimSun" size="14" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Registrar taller"/>
+            <Property name="text" type="java.lang.String" value="Talleres"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnInsertarTallerActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnTalleresActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="btnConsultarEstudiantes">
+        <Component class="javax.swing.JButton" name="btnGrupos">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="NSimSun" size="14" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Consultar estudiantes"/>
+            <Property name="text" type="java.lang.String" value="Grupos"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConsultarEstudiantesActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnGruposActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="btnConsultarInstructores">
+        <Component class="javax.swing.JButton" name="btnAcudientes">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="NSimSun" size="14" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Consultar instructores"/>
+            <Property name="text" type="java.lang.String" value="Acudientes"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConsultarInstructoresActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAcudientesActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JButton" name="btnConsultarTalleres">
+        <Component class="javax.swing.JButton" name="btnBecas">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="NSimSun" size="14" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Consultar talleres"/>
+            <Property name="text" type="java.lang.String" value="Becas"/>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConsultarTalleresActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnBecasActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnAsistencias">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="NSimSun" size="14" style="0"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Asistencias"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAsistenciasActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnMetodos">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="NSimSun" size="14" style="0"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="M&#xe9;todos"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMetodosActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnCorporaciones">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="NSimSun" size="14" style="0"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Corporaciones"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCorporacionesActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnConvocatorias">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="NSimSun" size="14" style="0"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Convocatorias"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConvocatoriasActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnAlianzas">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="NSimSun" size="14" style="0"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Alianzas"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAlianzasActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnMovimientos">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="NSimSun" size="14" style="0"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Movimientos"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMovimientosActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnPagosInstructor">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="NSimSun" size="14" style="0"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Pagos instructor"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPagosInstructorActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btnRegistrarUsuario">
