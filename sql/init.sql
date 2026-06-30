@@ -1,0 +1,15 @@
+-- =============================================================================
+-- Arte CIMA - Inicialización completa (esquema + datos de prueba)
+-- =============================================================================
+--
+-- Opción A - pgAdmin (recomendado):
+--   1. Conectarse a la BD "ArteCIMA"
+--   2. Ejecutar drop.sql   (solo si ya existen tablas)
+--   3. Ejecutar schema.sql
+--   4. Ejecutar seed.sql
+--
+-- Opción B - psql desde la carpeta sql/:
+--   psql -U postgres -d ArteCIMA -f drop.sql
+--   psql -U postgres -d ArteCIMA -f schema.sql
+--   psql -U postgres -d ArteCIMA -f seed.sql
+-- =============================================================================
