@@ -205,7 +205,9 @@ public final class TemaCIMA {
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btn.setBorder(new EmptyBorder(10, 24, 10, 24));
         btn.setContentAreaFilled(true);
-        btn.setOpaque(true);
+        btn.setOpaque(false);
+        btn.putClientProperty("JButton.buttonType", "roundRect");
+        btn.putClientProperty("Component.arc", RADIO_BOTON);
         agregarHover(btn, bg, hover);
     }
 
