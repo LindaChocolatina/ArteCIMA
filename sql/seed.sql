@@ -6,7 +6,8 @@
 --
 -- Usuarios de prueba para login (contraseña: admin123):
 --   admin      -> Administrador
---   instructor -> Instructor
+--   instructor -> Instructor (María Fernanda Rincón / mfrincon@artecima.org
+--                 se vincula al instructor id=1 por correo o nombre)
 --
 -- =============================================================================
 
@@ -104,6 +105,7 @@ INSERT INTO pago_instructor (id_instructor, fecha_pago, monto, concepto, id_movi
 (1, '2025-06-03', 680000.00, '8 clases dictadas en mayo - Taller Pintura inclusiva', 3);
 
 -- Usuarios del sistema (contraseña: admin123)
+-- Hash generado con jBCrypt (compatible con Usuario.autenticar). NO usar crypt()/pgcrypto aquí.
 INSERT INTO usuarios (nombre_rol, nombre_completo, nombre_usuario, correo, password_hash) VALUES
-('Administrador', 'Administrador Arte CIMA', 'admin', 'admin@artecima.org', crypt('admin123', gen_salt('bf', 10))),
-('Instructor', 'María Fernanda Rincón', 'instructor', 'mfrincon@artecima.org', crypt('admin123', gen_salt('bf', 10)));
+('Administrador', 'Linda Carrillo', 'admin', 'admin@artecima.org', '$2a$10$JtacnUHhbEpRaxXe9WEfK.UATFay7rlklPaOlNFUmXoQa7BmVAIie'),
+('Instructor', 'María Fernanda Rincón', 'instructor', 'mfrincon@artecima.org', '$2a$10$JtacnUHhbEpRaxXe9WEfK.UATFay7rlklPaOlNFUmXoQa7BmVAIie');

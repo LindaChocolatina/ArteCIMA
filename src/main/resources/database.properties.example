@@ -1,0 +1,5 @@
+# Copiar como database.properties (no commitear).
+
+db.url=jdbc:postgresql://localhost:5442/ArteCIMA
+db.user=artecima
+db.password=TU_CONTRASEÑA
