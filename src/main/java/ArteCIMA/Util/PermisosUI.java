@@ -2,8 +2,12 @@ package ArteCIMA.Util;
 
 import ArteCIMA.Modelo.Modulo;
 import ArteCIMA.Modelo.SesionUsuario;
+import java.awt.Component;
+import java.awt.Container;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JTextField;
 
 public final class PermisosUI {
 
@@ -19,15 +23,66 @@ public final class PermisosUI {
     }
 
     public static void aplicarPermisosCrud(Modulo modulo, JButton btnInsertar, JButton btnEditar, JButton btnEliminar) {
+        boolean puedeInsertar = SesionUsuario.puedeInsertar(modulo);
+        boolean puedeModificar = SesionUsuario.puedeModificar(modulo);
+        boolean puedeEliminar = SesionUsuario.puedeEliminar(modulo);
+
         if (btnInsertar != null) {
-            btnInsertar.setEnabled(SesionUsuario.puedeInsertar(modulo));
+            btnInsertar.setEnabled(puedeInsertar);
+            btnInsertar.setVisible(puedeInsertar);
         }
         if (btnEditar != null) {
-            btnEditar.setEnabled(SesionUsuario.puedeModificar(modulo));
+            btnEditar.setEnabled(puedeModificar);
+            btnEditar.setVisible(puedeModificar);
         }
         if (btnEliminar != null) {
-            btnEliminar.setEnabled(SesionUsuario.puedeEliminar(modulo));
+            btnEliminar.setEnabled(puedeEliminar);
+            btnEliminar.setVisible(puedeEliminar);
         }
+    }
+
+    /**
+     * En modo solo lectura bloquea text fields y combos (excepto el campo de búsqueda).
+     */
+    public static void aplicarModoCampos(Container contenedor, Modulo modulo, JTextField... excluir) {
+        if (contenedor == null || modulo == null) {
+            return;
+        }
+        boolean editable = SesionUsuario.puedeInsertar(modulo) || SesionUsuario.puedeModificar(modulo);
+        aplicarEditabilidad(contenedor, editable, excluir);
+    }
+
+    public static boolean puedeEditarCampos(Modulo modulo) {
+        return SesionUsuario.puedeInsertar(modulo) || SesionUsuario.puedeModificar(modulo);
+    }
+
+    private static void aplicarEditabilidad(Container contenedor, boolean editable, JTextField... excluir) {
+        for (Component c : contenedor.getComponents()) {
+            if (c instanceof JTextField) {
+                JTextField campo = (JTextField) c;
+                if (estaExcluido(campo, excluir) || Boolean.TRUE.equals(campo.getClientProperty("arteCIMA.esBuscar"))) {
+                    continue;
+                }
+                campo.setEditable(editable);
+                campo.setEnabled(editable);
+            } else if (c instanceof JComboBox) {
+                c.setEnabled(editable);
+            } else if (c instanceof Container) {
+                aplicarEditabilidad((Container) c, editable, excluir);
+            }
+        }
+    }
+
+    private static boolean estaExcluido(JTextField campo, JTextField... excluir) {
+        if (excluir == null) {
+            return false;
+        }
+        for (JTextField e : excluir) {
+            if (e == campo) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void configurarBotonMenu(JButton boton, Modulo modulo) {

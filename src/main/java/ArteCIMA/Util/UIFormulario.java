@@ -3,11 +3,16 @@ package ArteCIMA.Util;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Image;
-import java.awt.Insets;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,8 +28,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
-import org.netbeans.lib.awtextra.AbsoluteConstraints;
-import org.netbeans.lib.awtextra.AbsoluteLayout;
 
 /**
  * Presentación unificada para formularios CRUD con identidad artística CIMA.
@@ -34,7 +37,10 @@ public final class UIFormulario {
     private static final int ANCHO_VENTANA = 1280;
     private static final int ALTO_VENTANA = 780;
     private static final int MARGEN_H = 32;
-    private static final int ALTO_TABLA = 300;
+    private static final int ALTO_TABLA_MIN = 380;
+    private static final int MARGEN_INFERIOR_TABLA = 36;
+    private static final int INTERLINEADO_ACCIONES = 22;
+    private static final int ALTO_FILA_ACCIONES = 44;
 
     private UIFormulario() {
     }
@@ -45,6 +51,11 @@ public final class UIFormulario {
 
     public static void prepararModulo(JFrame frame, JPanel panelFondo, JPanel panelForm,
             JLabel lblLogo, JLabel lblTitulo, JTable tabla) {
+        prepararModulo(frame, panelFondo, panelForm, lblLogo, lblTitulo, tabla, null);
+    }
+
+    public static void prepararModulo(JFrame frame, JPanel panelFondo, JPanel panelForm,
+            JLabel lblLogo, JLabel lblTitulo, JTable tabla, ArteCIMA.Modelo.Modulo modulo) {
 
         aplicarIcono(frame);
 
@@ -54,8 +65,24 @@ public final class UIFormulario {
             estilizarTabla(tabla);
         }
 
+        // Identificar el campo Buscar antes de estilizar (el fondo gris se pierde al aplicar tema).
+        JTextField txtBuscarPrevio = buscarCampoBuscar(panelForm);
+        if (txtBuscarPrevio != null) {
+            txtBuscarPrevio.putClientProperty("arteCIMA.esBuscar", Boolean.TRUE);
+            panelForm.putClientProperty("arteCIMA.txtBuscar", txtBuscarPrevio);
+        }
+
+        // Estilizar antes del layout para que GroupLayout use la altura correcta de los campos.
         estilizarBotonesDelPanel(panelForm);
         estilizarComponentes(panelForm);
+        prepararLayoutCrud(panelForm, tabla);
+        JTextField txtBuscar = (JTextField) panelForm.getClientProperty("arteCIMA.txtBuscar");
+        if (txtBuscar != null) {
+            TextoUtil.aplicarPlaceholderBuscar(txtBuscar);
+        }
+        if (modulo != null) {
+            PermisosUI.aplicarModoCampos(panelForm, modulo, txtBuscar);
+        }
         armonizarPanel(panelForm, tabla);
         reconstruirEstructura(panelFondo, panelForm, tituloTexto);
 
@@ -69,6 +96,244 @@ public final class UIFormulario {
         frame.setResizable(true);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLocationRelativeTo(null);
+    }
+
+    /**
+     * Reorganiza campos, fila de búsqueda/acciones y tabla en un layout uniforme.
+     */
+    private static void prepararLayoutCrud(JPanel panelForm, JTable tabla) {
+        Dimension pref = panelForm.getPreferredSize();
+        int ancho = pref.width > 100 ? pref.width : ANCHO_VENTANA - 120;
+        int alto = pref.height > 100 ? pref.height : 520;
+        panelForm.setSize(ancho, alto);
+        panelForm.doLayout();
+
+        JTextField txtBuscar = (JTextField) panelForm.getClientProperty("arteCIMA.txtBuscar");
+        if (txtBuscar == null) {
+            txtBuscar = buscarCampoBuscar(panelForm);
+        }
+        JLabel lblBuscar = buscarEtiquetaBuscar(panelForm);
+        JButton btnBuscar = buscarBoton(panelForm, "buscar");
+        JButton btnInsertar = buscarBoton(panelForm, "insertar");
+        JButton btnEditar = buscarBoton(panelForm, "editar");
+        JButton btnEliminar = buscarBoton(panelForm, "elimi");
+        JButton btnLimpiar = buscarBoton(panelForm, "limpiar");
+        JButton btnVolver = buscarBoton(panelForm, "volver");
+        JScrollPane scroll = buscarScrollPane(panelForm);
+
+        if (txtBuscar == null || btnBuscar == null) {
+            return;
+        }
+
+        Set<Component> acciones = new HashSet<>();
+        acciones.add(txtBuscar);
+        acciones.add(btnBuscar);
+        if (btnInsertar != null) {
+            acciones.add(btnInsertar);
+        }
+        if (btnEditar != null) {
+            acciones.add(btnEditar);
+        }
+        if (btnEliminar != null) {
+            acciones.add(btnEliminar);
+        }
+        if (btnLimpiar != null) {
+            acciones.add(btnLimpiar);
+        }
+        if (btnVolver != null) {
+            acciones.add(btnVolver);
+        }
+        if (lblBuscar != null) {
+            acciones.add(lblBuscar);
+        }
+        if (scroll != null) {
+            acciones.add(scroll);
+        }
+
+        List<Component> campos = new ArrayList<>();
+        int maxY = 0;
+        for (Component c : panelForm.getComponents()) {
+            if (acciones.contains(c)) {
+                continue;
+            }
+            campos.add(c);
+            Rectangle b = c.getBounds();
+            if (b.height > 0) {
+                maxY = Math.max(maxY, b.y + b.height);
+            }
+        }
+
+        for (Component c : acciones) {
+            panelForm.remove(c);
+        }
+
+        JPanel panelCampos = new JPanel(null);
+        panelCampos.setOpaque(false);
+        for (Component c : campos) {
+            Rectangle b = c.getBounds();
+            if (c instanceof JTextField || c instanceof JPasswordField || c instanceof JComboBox) {
+                if (b.height < TemaCIMA.ALTO_CAMPO) {
+                    b.height = TemaCIMA.ALTO_CAMPO;
+                }
+            }
+            panelCampos.add(c);
+            c.setBounds(b);
+            maxY = Math.max(maxY, b.y + b.height);
+        }
+        int altoCampos = Math.max(maxY + 8, 120);
+        panelCampos.setPreferredSize(new Dimension(ancho, altoCampos));
+
+        JPanel filaAcciones = crearFilaAcciones(
+                txtBuscar, btnBuscar, btnInsertar, btnEditar, btnEliminar, btnLimpiar, btnVolver);
+        panelForm.putClientProperty("arteCIMA.txtBuscar", txtBuscar);
+
+        JPanel bloqueSuperior = new JPanel(new BorderLayout());
+        bloqueSuperior.setOpaque(false);
+        bloqueSuperior.add(panelCampos, BorderLayout.NORTH);
+        bloqueSuperior.add(filaAcciones, BorderLayout.SOUTH);
+
+        panelForm.removeAll();
+        panelForm.setLayout(new BorderLayout(0, 8));
+        panelForm.add(bloqueSuperior, BorderLayout.NORTH);
+
+        if (scroll != null) {
+            if (tabla != null) {
+                scroll.setViewportView(tabla);
+            }
+            panelForm.add(scroll, BorderLayout.CENTER);
+        }
+    }
+
+    private static JPanel crearFilaAcciones(JTextField txtBuscar, JButton btnBuscar,
+            JButton btnInsertar, JButton btnEditar, JButton btnEliminar,
+            JButton btnLimpiar, JButton btnVolver) {
+
+        JPanel fila = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        fila.setOpaque(false);
+        fila.setBorder(new EmptyBorder(INTERLINEADO_ACCIONES, MARGEN_H, 8, MARGEN_H));
+        fila.setPreferredSize(new Dimension(0, ALTO_FILA_ACCIONES + INTERLINEADO_ACCIONES));
+
+        TemaCIMA.estilizarCampo(txtBuscar);
+        txtBuscar.setPreferredSize(new Dimension(200, TemaCIMA.ALTO_CAMPO));
+        fila.add(txtBuscar);
+
+        JButton[] orden = {btnBuscar, btnInsertar, btnEditar, btnEliminar, btnLimpiar, btnVolver};
+        for (JButton btn : orden) {
+            if (btn != null) {
+                normalizarTamanoBoton(btn);
+                fila.add(btn);
+            }
+        }
+        return fila;
+    }
+
+    private static void normalizarTamanoBoton(JButton btn) {
+        Dimension pref = btn.getPreferredSize();
+        int ancho = Math.max(98, pref.width + 12);
+        btn.setPreferredSize(new Dimension(ancho, TemaCIMA.ALTO_CAMPO));
+        btn.setMinimumSize(new Dimension(ancho, TemaCIMA.ALTO_CAMPO));
+    }
+
+    private static JTextField buscarCampoBuscar(JPanel panel) {
+        // Preferir el campo junto a la etiqueta "Buscar:" (más fiable que posición/color).
+        JLabel lblBuscar = buscarEtiquetaBuscar(panel);
+        if (lblBuscar != null) {
+            Rectangle lb = lblBuscar.getBounds();
+            JTextField mejor = null;
+            int menorDistancia = Integer.MAX_VALUE;
+            for (Component c : panel.getComponents()) {
+                if (!(c instanceof JTextField)) {
+                    continue;
+                }
+                Rectangle tb = c.getBounds();
+                if (tb.height == 0) {
+                    continue;
+                }
+                boolean mismaFila = Math.abs(tb.y - lb.y) <= 30;
+                int distancia = tb.x - (lb.x + lb.width);
+                if (mismaFila && distancia >= -10 && distancia < menorDistancia) {
+                    menorDistancia = distancia;
+                    mejor = (JTextField) c;
+                }
+            }
+            if (mejor != null) {
+                return mejor;
+            }
+        }
+
+        JButton btnBuscar = buscarBoton(panel, "buscar");
+        if (btnBuscar == null) {
+            return null;
+        }
+        Rectangle bb = btnBuscar.getBounds();
+        JTextField mejor = null;
+        int menorDistancia = Integer.MAX_VALUE;
+
+        for (Component c : panel.getComponents()) {
+            if (!(c instanceof JTextField)) {
+                continue;
+            }
+            Rectangle tb = c.getBounds();
+            if (tb.height == 0) {
+                continue;
+            }
+            boolean mismaFila = Math.abs(tb.y - bb.y) <= 40;
+            if (!mismaFila && bb.height > 0) {
+                mismaFila = tb.y + tb.height >= bb.y - 10 && tb.y <= bb.y + bb.height + 10;
+            }
+            if (!mismaFila) {
+                continue;
+            }
+            int distancia = bb.x - (tb.x + tb.width);
+            if (distancia >= -20 && distancia < menorDistancia) {
+                menorDistancia = distancia;
+                mejor = (JTextField) c;
+            }
+        }
+
+        if (mejor != null) {
+            return mejor;
+        }
+
+        for (Component c : panel.getComponents()) {
+            if (c instanceof JTextField) {
+                if (Boolean.TRUE.equals(((JTextField) c).getClientProperty("arteCIMA.esBuscar"))) {
+                    return (JTextField) c;
+                }
+                Color fondo = c.getBackground();
+                if (fondo.getRed() >= 200 && fondo.getGreen() >= 190 && fondo.getBlue() >= 190) {
+                    return (JTextField) c;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static JLabel buscarEtiquetaBuscar(JPanel panel) {
+        for (Component c : panel.getComponents()) {
+            if (c instanceof JLabel) {
+                String texto = ((JLabel) c).getText();
+                if (texto != null && texto.trim().equalsIgnoreCase("Buscar:")) {
+                    return (JLabel) c;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static JButton buscarBoton(JPanel panel, String criterio) {
+        for (Component c : panel.getComponents()) {
+            if (!(c instanceof JButton)) {
+                continue;
+            }
+            JButton btn = (JButton) c;
+            String texto = btn.getText() != null ? btn.getText().toLowerCase() : "";
+            String comando = btn.getActionCommand() != null ? btn.getActionCommand().toLowerCase() : "";
+            if (texto.contains(criterio) || comando.contains(criterio)) {
+                return btn;
+            }
+        }
+        return null;
     }
 
     private static void reconstruirEstructura(JPanel panelFondo, JPanel panelForm, String tituloTexto) {
@@ -141,37 +406,40 @@ public final class UIFormulario {
         panelForm.addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override
             public void componentResized(java.awt.event.ComponentEvent evt) {
-                int ancho = panelForm.getWidth() - (2 * MARGEN_H);
-                if (ancho > 200) {
-                    scroll.setPreferredSize(new Dimension(ancho, ALTO_TABLA));
-                    scroll.setMinimumSize(new Dimension(ancho, ALTO_TABLA));
-                    panelForm.revalidate();
+                int ancho = Math.max(200, panelForm.getWidth() - (2 * MARGEN_H));
+                int altoDisponible = panelForm.getHeight() - MARGEN_INFERIOR_TABLA;
+                Component norte = panelForm.getComponentCount() > 0 ? panelForm.getComponent(0) : null;
+                if (norte != null) {
+                    altoDisponible -= norte.getPreferredSize().height;
                 }
+                int altoTabla = Math.max(ALTO_TABLA_MIN, altoDisponible);
+                scroll.setPreferredSize(new Dimension(ancho, altoTabla));
+                scroll.setMinimumSize(new Dimension(ancho, altoTabla));
+                panelForm.revalidate();
             }
         });
 
         int anchoInicial = ANCHO_VENTANA - 120;
-        scroll.setPreferredSize(new Dimension(anchoInicial, ALTO_TABLA));
-        scroll.setMinimumSize(new Dimension(anchoInicial, ALTO_TABLA));
-
-        if (panelForm.getLayout() instanceof AbsoluteLayout) {
-            int y = scroll.getY() > 0 ? scroll.getY() : 180;
-            int h = scroll.getHeight() > 0 ? scroll.getHeight() : ALTO_TABLA;
-            panelForm.remove(scroll);
-            panelForm.add(scroll, new AbsoluteConstraints(MARGEN_H, y, anchoInicial, h));
-        }
+        scroll.setPreferredSize(new Dimension(anchoInicial, ALTO_TABLA_MIN));
+        scroll.setMinimumSize(new Dimension(anchoInicial, ALTO_TABLA_MIN));
     }
 
-    private static JScrollPane buscarScrollPane(JPanel panel) {
+    private static JScrollPane buscarScrollPane(Container panel) {
         for (Component c : panel.getComponents()) {
             if (c instanceof JScrollPane) {
                 return (JScrollPane) c;
+            }
+            if (c instanceof Container) {
+                JScrollPane anidado = buscarScrollPane((Container) c);
+                if (anidado != null) {
+                    return anidado;
+                }
             }
         }
         return null;
     }
 
-    private static void estilizarComponentes(JPanel panel) {
+    private static void estilizarComponentes(Container panel) {
         for (Component c : panel.getComponents()) {
             if (c instanceof JLabel) {
                 c.setFont(TemaCIMA.FUENTE_CAMPO);
@@ -182,31 +450,37 @@ public final class UIFormulario {
                 TemaCIMA.estilizarCampo((JPasswordField) c);
             } else if (c instanceof JComboBox) {
                 TemaCIMA.estilizarCombo((JComboBox<?>) c);
+            } else if (c instanceof Container) {
+                estilizarComponentes((Container) c);
             }
         }
     }
 
-    private static void estilizarBotonesDelPanel(JPanel panel) {
+    private static void estilizarBotonesDelPanel(Container panel) {
         for (Component c : panel.getComponents()) {
-            if (!(c instanceof JButton)) {
-                continue;
+            if (c instanceof JButton) {
+                estilizarBotonCrud((JButton) c);
+            } else if (c instanceof Container) {
+                estilizarBotonesDelPanel((Container) c);
             }
-            JButton btn = (JButton) c;
-            btn.setFocusPainted(false);
-            btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        }
+    }
 
-            String texto = btn.getText().toLowerCase();
-            String comando = btn.getActionCommand() != null ? btn.getActionCommand().toLowerCase() : "";
+    private static void estilizarBotonCrud(JButton btn) {
+        btn.setFocusPainted(false);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-            if (texto.contains("insertar") || texto.contains("registrar")) {
-                TemaCIMA.estilizarBotonExito(btn);
-            } else if (texto.contains("editar") || texto.contains("modificar") || comando.contains("modificar")) {
-                TemaCIMA.estilizarBotonAdvertencia(btn);
-            } else if (texto.contains("elimi")) {
-                TemaCIMA.estilizarBotonPeligro(btn);
-            } else {
-                TemaCIMA.estilizarBotonSecundario(btn);
-            }
+        String texto = btn.getText() != null ? btn.getText().toLowerCase() : "";
+        String comando = btn.getActionCommand() != null ? btn.getActionCommand().toLowerCase() : "";
+
+        if (texto.contains("insertar") || texto.contains("registrar")) {
+            TemaCIMA.estilizarBotonExito(btn);
+        } else if (texto.contains("editar") || texto.contains("modificar") || comando.contains("modificar")) {
+            TemaCIMA.estilizarBotonAdvertencia(btn);
+        } else if (texto.contains("elimi")) {
+            TemaCIMA.estilizarBotonPeligro(btn);
+        } else {
+            TemaCIMA.estilizarBotonSecundario(btn);
         }
     }
 

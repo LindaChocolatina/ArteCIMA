@@ -27,6 +27,8 @@ import javax.swing.UIManager;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicButtonUI;
+import javax.swing.AbstractButton;
 
 /**
  * Identidad visual Arte CIMA — paleta del logo, formas suaves y acentos artísticos.
@@ -52,6 +54,8 @@ public final class TemaCIMA {
     public static final int RADIO_CAMPO = 14;
     public static final int RADIO_TARJETA = 22;
     public static final int ANCHO_TARJETA_VERTICAL = 380;
+    /** Altura mínima legible para text fields y combos (fuente + padding + borde). */
+    public static final int ALTO_CAMPO = 34;
 
     public static final Font FUENTE_TITULO = new Font("Segoe UI", Font.BOLD, 22);
     public static final Font FUENTE_SUBTITULO = new Font("Segoe UI", Font.BOLD, 18);
@@ -144,8 +148,8 @@ public final class TemaCIMA {
         campo.setBackground(BLANCO);
         campo.setBorder(BorderFactory.createCompoundBorder(
                 new BordeRedondeado(BORDE_SUAVE, RADIO_CAMPO),
-                new EmptyBorder(8, 12, 8, 12)));
-        campo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+                new EmptyBorder(4, 10, 4, 10)));
+        aplicarAltoCampo(campo);
         campo.setAlignmentX(Component.LEFT_ALIGNMENT);
     }
 
@@ -155,8 +159,8 @@ public final class TemaCIMA {
         campo.setBackground(BLANCO);
         campo.setBorder(BorderFactory.createCompoundBorder(
                 new BordeRedondeado(BORDE_SUAVE, RADIO_CAMPO),
-                new EmptyBorder(8, 12, 8, 12)));
-        campo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+                new EmptyBorder(4, 10, 4, 10)));
+        aplicarAltoCampo(campo);
         campo.setAlignmentX(Component.LEFT_ALIGNMENT);
     }
 
@@ -165,8 +169,21 @@ public final class TemaCIMA {
         combo.setFont(FUENTE_CAMPO);
         combo.setForeground(TEXTO);
         combo.setBackground(BLANCO);
-        combo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        aplicarAltoCampo(combo);
         combo.setAlignmentX(Component.LEFT_ALIGNMENT);
+    }
+
+    /** Garantiza altura suficiente para que el texto no se recorte. */
+    public static void aplicarAltoCampo(JComponent campo) {
+        Dimension pref = campo.getPreferredSize();
+        int alto = Math.max(pref.height, ALTO_CAMPO);
+        campo.setPreferredSize(new Dimension(pref.width, alto));
+        Dimension min = campo.getMinimumSize();
+        campo.setMinimumSize(new Dimension(Math.max(min.width, 20), ALTO_CAMPO));
+        campo.setMaximumSize(new Dimension(Integer.MAX_VALUE, ALTO_CAMPO));
+        if (campo.getHeight() > 0 && campo.getHeight() < ALTO_CAMPO) {
+            campo.setSize(campo.getWidth(), ALTO_CAMPO);
+        }
     }
 
     public static void estilizarBotonPrimario(JButton btn) {
@@ -203,12 +220,38 @@ public final class TemaCIMA {
         btn.setBackground(bg);
         btn.setFocusPainted(false);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setBorder(new EmptyBorder(10, 24, 10, 24));
-        btn.setContentAreaFilled(true);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
         btn.setOpaque(false);
-        btn.putClientProperty("JButton.buttonType", "roundRect");
-        btn.putClientProperty("Component.arc", RADIO_BOTON);
+        btn.setBorder(new EmptyBorder(10, 22, 10, 22));
+        instalarUiBotonRedondeado(btn);
         agregarHover(btn, bg, hover);
+    }
+
+    /** Pinta fondo redondeado y delega el texto al UI estándar. */
+    private static void instalarUiBotonRedondeado(JButton btn) {
+        btn.setUI(new BasicButtonUI() {
+            @Override
+            public void paint(Graphics g, JComponent c) {
+                AbstractButton b = (AbstractButton) c;
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                Color fondo;
+                if (b.isEnabled()) {
+                    fondo = b.getBackground();
+                } else {
+                    fondo = new Color(180, 180, 180);
+                }
+                g2.setColor(fondo);
+                int w = c.getWidth();
+                int h = c.getHeight();
+                if (w > 0 && h > 0) {
+                    g2.fillRoundRect(0, 0, w - 1, h - 1, RADIO_BOTON, RADIO_BOTON);
+                }
+                g2.dispose();
+                super.paint(g, c);
+            }
+        });
     }
 
     private static void agregarHover(JButton btn, Color normal, Color hover) {
@@ -217,12 +260,14 @@ public final class TemaCIMA {
             public void mouseEntered(java.awt.event.MouseEvent e) {
                 if (btn.isEnabled()) {
                     btn.setBackground(hover);
+                    btn.repaint();
                 }
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
                 btn.setBackground(normal);
+                btn.repaint();
             }
         });
     }
@@ -386,8 +431,9 @@ public final class TemaCIMA {
         panel.add(lbl);
         panel.add(javax.swing.Box.createVerticalStrut(5));
         campo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        campo.setPreferredSize(new Dimension(anchoCampo, 38));
-        campo.setMaximumSize(new Dimension(anchoCampo, 38));
+        campo.setPreferredSize(new Dimension(anchoCampo, ALTO_CAMPO));
+        campo.setMinimumSize(new Dimension(anchoCampo, ALTO_CAMPO));
+        campo.setMaximumSize(new Dimension(anchoCampo, ALTO_CAMPO));
         panel.add(campo);
         panel.add(javax.swing.Box.createVerticalStrut(10));
     }
