@@ -5,6 +5,7 @@ import ArteCIMA.Modelo.Alianza;
 import ArteCIMA.Modelo.Modulo;
 import java.util.List;
 import ArteCIMA.Util.MensajesUI;
+import ArteCIMA.Util.TextoUtil;
 import ArteCIMA.Util.PermisosUI;
 import javax.swing.table.DefaultTableModel;
 
@@ -15,7 +16,7 @@ public class FRMAlianza extends javax.swing.JFrame {
 
     public FRMAlianza() {
         initComponents();
-        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblAlianzas);
+        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblAlianzas, Modulo.ALIANZAS);
         btnEditar.setActionCommand("Modificar");
 
         if (!PermisosUI.verificarAccesoModulo(this, Modulo.ALIANZAS)) {
@@ -101,7 +102,7 @@ public class FRMAlianza extends javax.swing.JFrame {
         txtFechaFin.setText("");
         txtDescripcion.setText("");
         txtIdCorporacion.setText("");
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
         tblAlianzas.clearSelection();
     }
 
@@ -420,7 +421,7 @@ public class FRMAlianza extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        String criterio = txtBuscar.getText().trim();
+        String criterio = TextoUtil.criterioBusqueda(txtBuscar);
         if (criterio.isEmpty()) { MensajesUI.criterioBusquedaVacio(this, "ID o criterio de busqueda"); return; }
         Alianza a = controlador.buscar(criterio);
         limpiarCampos();
@@ -432,7 +433,7 @@ public class FRMAlianza extends javax.swing.JFrame {
         txtDescripcion.setText(a.getDescripcion() == null ? "" : a.getDescripcion());
         txtIdCorporacion.setText(a.getIdCorporacion() == null ? "" : String.valueOf(a.getIdCorporacion()));
         seleccionarFilaPorId(a.getIdAlianza());
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     public static void main(String args[]) {

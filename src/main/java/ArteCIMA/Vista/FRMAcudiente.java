@@ -5,6 +5,7 @@ import ArteCIMA.Modelo.Acudiente;
 import ArteCIMA.Modelo.Modulo;
 import java.util.List;
 import ArteCIMA.Util.MensajesUI;
+import ArteCIMA.Util.TextoUtil;
 import ArteCIMA.Util.PermisosUI;
 import javax.swing.table.DefaultTableModel;
 
@@ -15,7 +16,7 @@ public class FRMAcudiente extends javax.swing.JFrame {
 
     public FRMAcudiente() {
         initComponents();
-        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblAcudientes);
+        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblAcudientes, Modulo.ACUDIENTES);
         btnEditar.setActionCommand("Modificar");
 
         if (!PermisosUI.verificarAccesoModulo(this, Modulo.ACUDIENTES)) {
@@ -23,6 +24,7 @@ public class FRMAcudiente extends javax.swing.JFrame {
             return;
         }
         PermisosUI.aplicarPermisosCrud(Modulo.ACUDIENTES, btnInsertar, btnEditar, btnEliminar);
+        PermisosUI.aplicarModoCampos(jPanel2, Modulo.ACUDIENTES, txtBuscar);
 
         cargarTabla();
         tblAcudientes.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -90,7 +92,7 @@ public class FRMAcudiente extends javax.swing.JFrame {
         txtParentesco.setText("");
         txtTelefono.setText("");
         txtCorreo.setText("");
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
         tblAcudientes.clearSelection();
     }
 
@@ -402,7 +404,7 @@ public class FRMAcudiente extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        String criterio = txtBuscar.getText().trim();
+        String criterio = TextoUtil.criterioBusqueda(txtBuscar);
         if (criterio.isEmpty()) { MensajesUI.criterioBusquedaVacio(this, "ID o criterio de busqueda"); return; }
         Acudiente a = controlador.buscar(criterio);
         limpiarCampos();
@@ -414,7 +416,7 @@ public class FRMAcudiente extends javax.swing.JFrame {
         txtTelefono.setText(a.getTelefono() == null ? "" : a.getTelefono());
         txtCorreo.setText(a.getCorreo() == null ? "" : a.getCorreo());
         seleccionarFilaPorId(a.getIdAcudiente());
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     public static void main(String args[]) {

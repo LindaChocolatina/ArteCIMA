@@ -5,6 +5,7 @@ import ArteCIMA.Modelo.Metodo;
 import ArteCIMA.Modelo.Modulo;
 import java.util.List;
 import ArteCIMA.Util.MensajesUI;
+import ArteCIMA.Util.TextoUtil;
 import ArteCIMA.Util.PermisosUI;
 import javax.swing.table.DefaultTableModel;
 
@@ -15,7 +16,7 @@ public class FRMMetodo extends javax.swing.JFrame {
 
     public FRMMetodo() {
         initComponents();
-        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblMetodos);
+        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblMetodos, Modulo.METODOS);
         btnEditar.setActionCommand("Modificar");
 
         if (!PermisosUI.verificarAccesoModulo(this, Modulo.METODOS)) {
@@ -74,7 +75,7 @@ public class FRMMetodo extends javax.swing.JFrame {
     private void limpiarCampos() {
         txtNombre.setText("");
         txtDescripcion.setText("");
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
         tblMetodos.clearSelection();
     }
 
@@ -331,7 +332,7 @@ public class FRMMetodo extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        String criterio = txtBuscar.getText().trim();
+        String criterio = TextoUtil.criterioBusqueda(txtBuscar);
         if (criterio.isEmpty()) { MensajesUI.criterioBusquedaVacio(this, "ID o criterio de busqueda"); return; }
         Metodo m = controlador.buscar(criterio);
         limpiarCampos();
@@ -339,7 +340,7 @@ public class FRMMetodo extends javax.swing.JFrame {
         txtNombre.setText(m.getNombre() == null ? "" : m.getNombre());
         txtDescripcion.setText(m.getDescripcion() == null ? "" : m.getDescripcion());
         seleccionarFilaPorId(m.getIdMetodo());
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     public static void main(String args[]) {

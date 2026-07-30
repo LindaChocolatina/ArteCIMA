@@ -3,7 +3,9 @@ package ArteCIMA.Vista;
 import ArteCIMA.Controlador.ControladorInstructor;
 import ArteCIMA.Modelo.Instructor;
 import ArteCIMA.Modelo.Modulo;
+import ArteCIMA.Modelo.SesionUsuario;
 import ArteCIMA.Util.MensajesUI;
+import ArteCIMA.Util.TextoUtil;
 import ArteCIMA.Util.PermisosUI;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
@@ -17,7 +19,7 @@ public class FRMInstructor extends javax.swing.JFrame {
 
     public FRMInstructor() {
         initComponents();
-        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblInstructores);
+        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblInstructores, Modulo.INSTRUCTORES);
         btnEditar.setActionCommand("Modificar");
 
         if (!PermisosUI.verificarAccesoModulo(this, Modulo.INSTRUCTORES)) {
@@ -25,6 +27,9 @@ public class FRMInstructor extends javax.swing.JFrame {
             return;
         }
         PermisosUI.aplicarPermisosCrud(Modulo.INSTRUCTORES, btnInsertar, btnEditar, btnEliminar);
+        // Reaplicar tras el layout: el instructor no debe editar datos (en especial valor por clase).
+        PermisosUI.aplicarModoCampos(jPanel2, Modulo.INSTRUCTORES, txtBuscar);
+        aplicarBloqueoValorPorClase();
 
         cargarTabla(null, null, null, null);
 
@@ -35,12 +40,27 @@ public class FRMInstructor extends javax.swing.JFrame {
         });
 
         comboDiscapacidad.addActionListener(e -> {
+            boolean puedeEditar = PermisosUI.puedeEditarCampos(Modulo.INSTRUCTORES);
             boolean tiene = comboDiscapacidad.getSelectedItem().toString().equalsIgnoreCase("Sí");
-            txtTipoDiscapacidad.setEnabled(tiene);
+            txtTipoDiscapacidad.setEnabled(puedeEditar && tiene);
             if (!tiene) {
                 txtTipoDiscapacidad.setText("");
             }
         });
+    }
+
+    /** Valor por clase es dato administrativo/financiero: el rol Instructor nunca lo edita. */
+    private void aplicarBloqueoValorPorClase() {
+        boolean permitir = PermisosUI.puedeEditarCampos(Modulo.INSTRUCTORES)
+                && !esRolInstructor();
+        txtValor.setEditable(permitir);
+        txtValor.setEnabled(permitir);
+        txtValor.setFocusable(permitir);
+    }
+
+    private static boolean esRolInstructor() {
+        String rol = SesionUsuario.getNombreRol();
+        return rol != null && rol.equalsIgnoreCase("Instructor");
     }
 
     private void cargarTabla(String idInstructor, String numDocumento, String nombreCompleto, Boolean discapacidad) {
@@ -93,6 +113,7 @@ public class FRMInstructor extends javax.swing.JFrame {
                     txtTipoDiscapacidad.setText(instructor.getTipoDiscapacidad() != null ? instructor.getTipoDiscapacidad() : "");
                     txtEspecialidad.setText(instructor.getEspecialidadArtistica() != null ? instructor.getEspecialidadArtistica() : "");
                     txtValor.setText(instructor.getValorPorClase() != null ? instructor.getValorPorClase().toString() : "");
+                    aplicarBloqueoValorPorClase();
                 }
 
             } catch (NumberFormatException e) {
@@ -116,6 +137,7 @@ public class FRMInstructor extends javax.swing.JFrame {
    
     txtEspecialidad.setText("");
     txtValor.setText("");
+    aplicarBloqueoValorPorClase();
        
     tblInstructores.clearSelection();
     this.idInstructorSeleccionado = null;
@@ -473,7 +495,7 @@ public class FRMInstructor extends javax.swing.JFrame {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         try {
-            String textoBusqueda = txtBuscar.getText().trim();
+            String textoBusqueda = TextoUtil.criterioBusqueda(txtBuscar);
 
             if (textoBusqueda.isEmpty()) {
                 cargarTabla(null, null, null, null);
@@ -498,7 +520,7 @@ public class FRMInstructor extends javax.swing.JFrame {
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
         limpiarCampos();
-        txtBuscar.setText(""); 
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar); 
         cargarTabla(null, null, null, null);
     }//GEN-LAST:event_btnLimpiarActionPerformed
 

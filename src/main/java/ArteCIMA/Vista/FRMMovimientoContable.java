@@ -6,6 +6,7 @@ import ArteCIMA.Modelo.MovimientoContable;
 import java.math.BigDecimal;
 import java.util.List;
 import ArteCIMA.Util.MensajesUI;
+import ArteCIMA.Util.TextoUtil;
 import ArteCIMA.Util.PermisosUI;
 import javax.swing.table.DefaultTableModel;
 
@@ -16,7 +17,7 @@ public class FRMMovimientoContable extends javax.swing.JFrame {
 
     public FRMMovimientoContable() {
         initComponents();
-        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblMovimientos);
+        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblMovimientos, Modulo.MOVIMIENTOS);
         btnEditar.setActionCommand("Modificar");
 
         if (!PermisosUI.verificarAccesoModulo(this, Modulo.MOVIMIENTOS)) {
@@ -102,7 +103,7 @@ public class FRMMovimientoContable extends javax.swing.JFrame {
         txtFecha.setText("");
         txtFuente.setText("");
         txtIdCorporacion.setText("");
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
         tblMovimientos.clearSelection();
     }
 
@@ -422,7 +423,7 @@ public class FRMMovimientoContable extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        String criterio = txtBuscar.getText().trim();
+        String criterio = TextoUtil.criterioBusqueda(txtBuscar);
         if (criterio.isEmpty()) { MensajesUI.criterioBusquedaVacio(this, "ID o criterio de busqueda"); return; }
         MovimientoContable m = controlador.buscar(criterio);
         limpiarCampos();
@@ -434,7 +435,7 @@ public class FRMMovimientoContable extends javax.swing.JFrame {
         txtFuente.setText(m.getFuente() == null ? "" : m.getFuente());
         txtIdCorporacion.setText(m.getIdCorporacion() == null ? "" : String.valueOf(m.getIdCorporacion()));
         seleccionarFilaPorId(m.getIdMovimiento());
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     public static void main(String args[]) {

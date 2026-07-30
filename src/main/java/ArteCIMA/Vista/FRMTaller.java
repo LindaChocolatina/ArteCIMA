@@ -5,6 +5,7 @@ import ArteCIMA.Modelo.Modulo;
 import ArteCIMA.Modelo.Taller;
 import ArteCIMA.Util.HorarioUtil;
 import ArteCIMA.Util.MensajesUI;
+import ArteCIMA.Util.TextoUtil;
 import ArteCIMA.Util.PermisosUI;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
@@ -16,18 +17,22 @@ public class FRMTaller extends javax.swing.JFrame {
 
     public FRMTaller() {
         initComponents();
-        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblTalleres);
+        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblTalleres, Modulo.TALLERES);
         btnEditar.setActionCommand("Modificar");
 
         if (!PermisosUI.verificarAccesoModulo(this, Modulo.TALLERES)) {
             java.awt.EventQueue.invokeLater(this::dispose);
             return;
         }
-        PermisosUI.aplicarPermisosCrud(Modulo.TALLERES, btnInsertar, btnEditar, btnEliminar);
 
         comboDia.setModel(new javax.swing.DefaultComboBoxModel<>(HorarioUtil.DIAS));
         comboHoraInicio.setModel(new javax.swing.DefaultComboBoxModel<>(HorarioUtil.HORAS));
         comboHoraFin.setModel(new javax.swing.DefaultComboBoxModel<>(HorarioUtil.HORAS));
+
+        // Reaplicar después de cargar combos: Instructor solo consulta (lectura).
+        PermisosUI.aplicarPermisosCrud(Modulo.TALLERES, btnInsertar, btnEditar, btnEliminar);
+        PermisosUI.aplicarModoCampos(jPanel2, Modulo.TALLERES, txtBuscar);
+
         cargarTabla();
 
         tblTalleres.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -50,7 +55,7 @@ public class FRMTaller extends javax.swing.JFrame {
                 t.getTipoArte(),
                 t.getHorario(),
                 t.getIdMetodo(),
-                t.getIdInstructor(),
+                t.getNombreInstructor() != null ? t.getNombreInstructor() : "",
                 t.getIdAlianza()
             });
         }
@@ -63,12 +68,38 @@ public class FRMTaller extends javax.swing.JFrame {
         }
 
         DefaultTableModel model = (DefaultTableModel) tblTalleres.getModel();
-        txtNombre.setText(valorCelda(model, fila, 1));
-        comboTipoArte.setSelectedItem(model.getValueAt(fila, 2) == null ? "Selecciona" : model.getValueAt(fila, 2).toString());
-        HorarioUtil.aplicar(valorCelda(model, fila, 3), comboDia, comboHoraInicio, comboHoraFin);
-        txtIdMetodo.setText(valorCelda(model, fila, 4));
-        txtIdInstructor.setText(valorCelda(model, fila, 5));
-        txtIdAlianza.setText(valorCelda(model, fila, 6));
+        String idTexto = valorCelda(model, fila, 0);
+        if (idTexto.isEmpty()) {
+            return;
+        }
+
+        try {
+            Taller taller = controlador.buscar(Integer.parseInt(idTexto));
+            if (taller != null) {
+                mostrarTaller(taller);
+            }
+        } catch (NumberFormatException e) {
+            logger.log(java.util.logging.Level.WARNING, "ID de taller inválido en tabla", e);
+        }
+    }
+
+    private void mostrarTaller(Taller taller) {
+        txtNombre.setText(taller.getNombre() == null ? "" : taller.getNombre());
+        comboTipoArte.setSelectedItem(taller.getTipoArte() == null ? "Selecciona" : taller.getTipoArte());
+        HorarioUtil.aplicar(taller.getHorario(), comboDia, comboHoraInicio, comboHoraFin);
+        txtIdMetodo.setText(taller.getIdMetodo() == null ? "" : String.valueOf(taller.getIdMetodo()));
+        if (PermisosUI.puedeEditarCampos(Modulo.TALLERES)) {
+            txtIdInstructor.setText(taller.getIdInstructor() == null ? "" : String.valueOf(taller.getIdInstructor()));
+        } else {
+            String instructor = taller.getNombreInstructor();
+            if (instructor != null && !instructor.isBlank()) {
+                txtIdInstructor.setText(instructor);
+            } else {
+                txtIdInstructor.setText(taller.getIdInstructor() == null ? "" : String.valueOf(taller.getIdInstructor()));
+            }
+        }
+        txtIdAlianza.setText(taller.getIdAlianza() == null ? "" : String.valueOf(taller.getIdAlianza()));
+        PermisosUI.aplicarModoCampos(jPanel2, Modulo.TALLERES, txtBuscar);
     }
 
     private String valorCelda(DefaultTableModel model, int fila, int col) {
@@ -85,9 +116,18 @@ public class FRMTaller extends javax.swing.JFrame {
         taller.setTipoArte(comboTipoArte.getSelectedItem().toString());
         taller.setHorario(obtenerHorarioSeleccionado());
         taller.setIdMetodo(txtIdMetodo.getText().trim().isEmpty() ? null : Integer.parseInt(txtIdMetodo.getText().trim()));
-        taller.setIdInstructor(txtIdInstructor.getText().trim().isEmpty() ? null : Integer.parseInt(txtIdInstructor.getText().trim()));
+        taller.setIdInstructor(parseIdInstructor(txtIdInstructor.getText().trim()));
         taller.setIdAlianza(txtIdAlianza.getText().trim().isEmpty() ? null : Integer.parseInt(txtIdAlianza.getText().trim()));
         return taller;
+    }
+
+    /** Acepta "3" o "3 - Nombre Completo" al guardar. */
+    private Integer parseIdInstructor(String texto) {
+        if (texto == null || texto.isEmpty()) {
+            return null;
+        }
+        String idParte = texto.contains("-") ? texto.substring(0, texto.indexOf('-')).trim() : texto.trim();
+        return Integer.parseInt(idParte);
     }
 
     private String obtenerHorarioSeleccionado() {
@@ -141,7 +181,7 @@ public class FRMTaller extends javax.swing.JFrame {
         txtIdMetodo.setText("");
         txtIdInstructor.setText("");
         txtIdAlianza.setText("");
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
         tblTalleres.clearSelection();
     }
 
@@ -233,7 +273,7 @@ public class FRMTaller extends javax.swing.JFrame {
         txtIdMetodo.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
 
         jLabel7.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
-        jLabel7.setText("ID instructor:");
+        jLabel7.setText("Instructor:");
 
         txtIdInstructor.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
 
@@ -271,7 +311,7 @@ public class FRMTaller extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID_taller", "Nombre", "Tipo_arte", "Horario", "ID_metodo", "ID_instructor", "ID_alianza"
+                "ID_taller", "Nombre", "Tipo_arte", "Horario", "ID_metodo", "Instructor", "ID_alianza"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -505,9 +545,9 @@ public class FRMTaller extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        String criterio = txtBuscar.getText().trim();
+        String criterio = TextoUtil.criterioBusqueda(txtBuscar);
         if (criterio.isEmpty()) {
-            MensajesUI.criterioBusquedaVacio(this, "ID o nombre del taller");
+            MensajesUI.criterioBusquedaVacio(this, "ID, nombre del taller o del instructor");
             return;
         }
         Taller taller = controlador.buscar(criterio);
@@ -516,14 +556,9 @@ public class FRMTaller extends javax.swing.JFrame {
             MensajesUI.sinResultadosBusqueda(this);
             return;
         }
-        txtNombre.setText(taller.getNombre() == null ? "" : taller.getNombre());
-        comboTipoArte.setSelectedItem(taller.getTipoArte() == null ? "Selecciona" : taller.getTipoArte());
-        HorarioUtil.aplicar(taller.getHorario(), comboDia, comboHoraInicio, comboHoraFin);
-        txtIdMetodo.setText(taller.getIdMetodo() == null ? "" : String.valueOf(taller.getIdMetodo()));
-        txtIdInstructor.setText(taller.getIdInstructor() == null ? "" : String.valueOf(taller.getIdInstructor()));
-        txtIdAlianza.setText(taller.getIdAlianza() == null ? "" : String.valueOf(taller.getIdAlianza()));
+        mostrarTaller(taller);
         seleccionarFilaPorId(taller.getIdTaller());
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     public static void main(String args[]) {

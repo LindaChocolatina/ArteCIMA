@@ -4,6 +4,7 @@ import ArteCIMA.Controlador.ControladorEstudiante;
 import ArteCIMA.Modelo.Estudiante;
 import ArteCIMA.Modelo.Modulo;
 import ArteCIMA.Util.MensajesUI;
+import ArteCIMA.Util.TextoUtil;
 import ArteCIMA.Util.PermisosUI;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
@@ -15,7 +16,7 @@ public class FRMEstudiante extends javax.swing.JFrame {
 
     public FRMEstudiante() {
         initComponents();
-        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblEstudiantes);
+        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblEstudiantes, Modulo.ESTUDIANTES);
         btnEditar.setActionCommand("Modificar");
 
         if (!PermisosUI.verificarAccesoModulo(this, Modulo.ESTUDIANTES)) {
@@ -23,10 +24,12 @@ public class FRMEstudiante extends javax.swing.JFrame {
             return;
         }
         PermisosUI.aplicarPermisosCrud(Modulo.ESTUDIANTES, btnInsertar, btnEditar, btnEliminar);
+        PermisosUI.aplicarModoCampos(jPanel2, Modulo.ESTUDIANTES, txtBuscar);
 
         comboDiscapacidad.addActionListener(e -> {
+            boolean puedeEditar = PermisosUI.puedeEditarCampos(Modulo.ESTUDIANTES);
             boolean tiene = comboDiscapacidad.getSelectedItem().toString().equalsIgnoreCase("Sí");
-            txtTipoDiscapacidad.setEnabled(tiene);
+            txtTipoDiscapacidad.setEnabled(puedeEditar && tiene);
             if(!tiene) txtTipoDiscapacidad.setText("");
         });
                 
@@ -89,7 +92,7 @@ public class FRMEstudiante extends javax.swing.JFrame {
         txtIdAcudiente.setText(model.getValueAt(fila, 12) == null ? "" : model.getValueAt(fila, 12).toString());
         
         boolean tiene = comboDiscapacidad.getSelectedItem().toString().equalsIgnoreCase("Sí");
-        txtTipoDiscapacidad.setEnabled(tiene);
+        txtTipoDiscapacidad.setEnabled(PermisosUI.puedeEditarCampos(Modulo.ESTUDIANTES) && tiene);
     }
     
     private void limpiarCampos() {
@@ -108,7 +111,7 @@ public class FRMEstudiante extends javax.swing.JFrame {
         comboDiscapacidad.setSelectedIndex(0);
         comboBeneficio.setSelectedIndex(0);
 
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
         tblEstudiantes.clearSelection();
         txtTipoDiscapacidad.setEnabled(false);
     }
@@ -643,7 +646,7 @@ public class FRMEstudiante extends javax.swing.JFrame {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
  
-    String criterio = txtBuscar.getText().trim();
+    String criterio = TextoUtil.criterioBusqueda(txtBuscar);
     
     // 1. Validar si el campo de búsqueda está vacío
     if (criterio.isEmpty()) {
@@ -684,7 +687,7 @@ public class FRMEstudiante extends javax.swing.JFrame {
     txtIdAcudiente.setText(est.getIdAcudiente() == null || est.getIdAcudiente() == 0 ? "" : String.valueOf(est.getIdAcudiente()));
     
     boolean tiene = comboDiscapacidad.getSelectedItem().toString().equalsIgnoreCase("Sí");
-    txtTipoDiscapacidad.setEnabled(tiene);
+    txtTipoDiscapacidad.setEnabled(PermisosUI.puedeEditarCampos(Modulo.ESTUDIANTES) && tiene);
     
     // --- 5. SELECCIONAR Y RESALTAR LA FILA EN LA TABLA ---
     
@@ -714,7 +717,7 @@ public class FRMEstudiante extends javax.swing.JFrame {
     }
     
     // 6. Limpiar el campo de búsqueda para la siguiente búsqueda
-    txtBuscar.setText(""); 
+    TextoUtil.restaurarPlaceholderBuscar(txtBuscar); 
 
     }//GEN-LAST:event_btnBuscarActionPerformed
    

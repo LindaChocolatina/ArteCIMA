@@ -47,7 +47,7 @@ public class PagPrincipal extends JFrame {
     private JButton btnEstudiantes, btnInstructores, btnTalleres, btnGrupos;
     private JButton btnAcudientes, btnBecas, btnAsistencias, btnMetodos;
     private JButton btnCorporaciones, btnConvocatorias, btnAlianzas, btnRegistrarUsuario;
-    private JButton btnMovimientos, btnPagosInstructor;
+    private JButton btnMovimientos, btnPagosInstructor, btnReportes;
 
     private int indiceAcento = 0;
 
@@ -107,7 +107,7 @@ public class PagPrincipal extends JFrame {
 
         indiceAcento = 0;
         panelTarjetas.add(envolverGridCentrado(crearPanelGrid(
-                btnCorporaciones, btnConvocatorias, btnAlianzas, btnRegistrarUsuario)), "Administrativa");
+                btnCorporaciones, btnConvocatorias, btnAlianzas, btnRegistrarUsuario, btnReportes)), "Administrativa");
 
         indiceAcento = 0;
         panelTarjetas.add(envolverGridCentrado(crearPanelGrid(
@@ -132,6 +132,7 @@ public class PagPrincipal extends JFrame {
         btnConvocatorias = crearTarjetaModulo("Convocatorias", "Gestionar convocatorias");
         btnAlianzas = crearTarjetaModulo("Alianzas", "Gestionar alianzas institucionales");
         btnRegistrarUsuario = crearTarjetaModulo("Usuarios", "Crear nuevos usuarios");
+        btnReportes = crearTarjetaModulo("Reportes", "Generar informes del sistema");
 
         btnMovimientos = crearTarjetaModulo("Movimientos", "Registrar movimientos contables");
         btnPagosInstructor = crearTarjetaModulo("Pagos Instructor", "Gestionar pagos a instructores");
@@ -149,6 +150,7 @@ public class PagPrincipal extends JFrame {
         btnConvocatorias.addActionListener(e -> abrirModulo(Modulo.CONVOCATORIAS, () -> new FRMConvocatoria().setVisible(true)));
         btnAlianzas.addActionListener(e -> abrirModulo(Modulo.ALIANZAS, () -> new FRMAlianza().setVisible(true)));
         btnRegistrarUsuario.addActionListener(e -> abrirModulo(Modulo.REGISTRAR_USUARIO, () -> new RegistrarUsuario().setVisible(true)));
+        btnReportes.addActionListener(e -> abrirModulo(Modulo.REPORTES, () -> new FRMReportes().setVisible(true)));
 
         btnMovimientos.addActionListener(e -> abrirModulo(Modulo.MOVIMIENTOS, () -> new FRMMovimientoContable().setVisible(true)));
         btnPagosInstructor.addActionListener(e -> abrirModulo(Modulo.PAGOS_INSTRUCTOR, () -> new FRMPagoInstructor().setVisible(true)));
@@ -304,6 +306,7 @@ public class PagPrincipal extends JFrame {
         PermisosUI.configurarBotonMenu(btnMovimientos, Modulo.MOVIMIENTOS);
         PermisosUI.configurarBotonMenu(btnPagosInstructor, Modulo.PAGOS_INSTRUCTOR);
         PermisosUI.configurarBotonMenu(btnRegistrarUsuario, Modulo.REGISTRAR_USUARIO);
+        PermisosUI.configurarBotonMenu(btnReportes, Modulo.REPORTES);
     }
 
     private void abrirModulo(Modulo modulo, Runnable abrir) {

@@ -5,6 +5,7 @@ import ArteCIMA.Modelo.Corporacion;
 import ArteCIMA.Modelo.Modulo;
 import java.util.List;
 import ArteCIMA.Util.MensajesUI;
+import ArteCIMA.Util.TextoUtil;
 import ArteCIMA.Util.PermisosUI;
 import javax.swing.table.DefaultTableModel;
 
@@ -15,7 +16,7 @@ public class FRMCorporacion extends javax.swing.JFrame {
 
     public FRMCorporacion() {
         initComponents();
-        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblCorporaciones);
+        ArteCIMA.Util.UIFormulario.prepararModulo(this, jPanel1, jPanel2, jLabel1, jLabel2, tblCorporaciones, Modulo.CORPORACIONES);
         btnEditar.setActionCommand("Modificar");
 
         if (!PermisosUI.verificarAccesoModulo(this, Modulo.CORPORACIONES)) {
@@ -88,7 +89,7 @@ public class FRMCorporacion extends javax.swing.JFrame {
         txtNombre.setText("");
         txtDireccion.setText("");
         comboTipoEntidad.setSelectedIndex(0);
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
         tblCorporaciones.clearSelection();
     }
 
@@ -372,7 +373,7 @@ public class FRMCorporacion extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        String criterio = txtBuscar.getText().trim();
+        String criterio = TextoUtil.criterioBusqueda(txtBuscar);
         if (criterio.isEmpty()) { MensajesUI.criterioBusquedaVacio(this, "ID o criterio de busqueda"); return; }
         Corporacion c = controlador.buscar(criterio);
         limpiarCampos();
@@ -382,7 +383,7 @@ public class FRMCorporacion extends javax.swing.JFrame {
         txtDireccion.setText(c.getDireccion() == null ? "" : c.getDireccion());
         comboTipoEntidad.setSelectedItem(c.getTipoEntidad() == null ? "Selecciona" : c.getTipoEntidad());
         seleccionarFilaPorId(c.getIdCorporacion());
-        txtBuscar.setText("");
+        TextoUtil.restaurarPlaceholderBuscar(txtBuscar);
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     public static void main(String args[]) {
