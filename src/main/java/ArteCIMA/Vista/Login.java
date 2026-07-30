@@ -136,7 +136,7 @@ public class Login extends JFrame {
 
         gbc.gridy++;
         gbc.insets = new Insets(0, 0, 0, 0);
-        campo.setPreferredSize(new Dimension(ANCHO_CAMPO, 38));
+        campo.setPreferredSize(new Dimension(ANCHO_CAMPO, TemaCIMA.ALTO_CAMPO));
         form.add(campo, gbc);
 
         gbc.gridy++;

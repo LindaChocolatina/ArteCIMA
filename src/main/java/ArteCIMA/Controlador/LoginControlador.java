@@ -21,12 +21,19 @@ public class LoginControlador {
         Usuario u = controladorUsuario.autenticar(user, pass);
 
         if (u != null) {
-            SesionUsuario.iniciarSesion(u.getRol(), u.getNombreCompleto());
+            SesionUsuario.iniciarSesion(u.getRol(), u.getNombreCompleto(), u.getCorreo(), resolverIdInstructor(u));
             vista.mostrarBienvenida(u.getNombreCompleto());
             vista.abrirPagPrincipal();
             vista.cerrar();
         } else {
             vista.mostrarError(controladorUsuario.getUltimoMensaje());
         }
+    }
+
+    private Integer resolverIdInstructor(Usuario u) {
+        if (u == null || u.getRol() == null || !u.getRol().equalsIgnoreCase("Instructor")) {
+            return null;
+        }
+        return ArteCIMA.Modelo.Instructor.resolverIdPorUsuario(u.getCorreo(), u.getNombreCompleto());
     }
 }
