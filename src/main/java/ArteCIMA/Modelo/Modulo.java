@@ -15,7 +15,8 @@ public enum Modulo {
     ALIANZAS("Alianzas"),
     MOVIMIENTOS("Movimientos contables"),
     PAGOS_INSTRUCTOR("Pagos a instructores"),
-    REGISTRAR_USUARIO("Registro de usuarios");
+    REGISTRAR_USUARIO("Registro de usuarios"),
+    REPORTES("Reportes");
 
     private final String etiqueta;
 

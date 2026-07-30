@@ -31,6 +31,13 @@ public class Grupo {
     public void setIdTaller(Integer idTaller) { this.idTaller = idTaller; }
 
     public static List<Grupo> listar() {
+        if (SesionUsuario.esInstructor()) {
+            Integer idInstructor = SesionUsuario.getIdInstructor();
+            if (idInstructor == null) {
+                return new ArrayList<>();
+            }
+            return listarPorInstructor(idInstructor);
+        }
         String sql = "SELECT * FROM grupo ORDER BY id_grupo ASC";
         List<Grupo> lista = new ArrayList<>();
         try (Connection con = Conexion.getConexion();
@@ -46,14 +53,53 @@ public class Grupo {
         return lista;
     }
 
+    public static List<Grupo> listarPorInstructor(int idInstructor) {
+        String sql = "SELECT g.* FROM grupo g "
+                   + "INNER JOIN taller t ON t.id_taller = g.id_taller "
+                   + "WHERE t.id_instructor = ? "
+                   + "ORDER BY g.id_grupo ASC";
+        List<Grupo> lista = new ArrayList<>();
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idInstructor);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSet(rs));
+                }
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error al listar grupos del instructor: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        return lista;
+    }
+
     public static Grupo buscar(String criterio) {
-        String sql = "SELECT * FROM grupo WHERE CAST(id_grupo AS VARCHAR) = ? OR "
-                   + ArteCIMA.Util.TextoUtil.expresionSqlSinTildes("nombre") + " LIKE ?";
+        Integer idInstructor = null;
+        if (SesionUsuario.esInstructor()) {
+            idInstructor = SesionUsuario.getIdInstructor();
+            if (idInstructor == null) {
+                return null;
+            }
+        }
+        String sql = "SELECT g.* FROM grupo g ";
+        if (idInstructor != null) {
+            sql += "INNER JOIN taller t ON t.id_taller = g.id_taller ";
+        }
+        sql += "WHERE (CAST(g.id_grupo AS VARCHAR) = ? OR "
+             + ArteCIMA.Util.TextoUtil.expresionSqlSinTildes("g.nombre") + " LIKE ?)";
+        if (idInstructor != null) {
+            sql += " AND t.id_instructor = ?";
+        }
+
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             String busqueda = criterio.trim();
             ps.setString(1, busqueda);
             ps.setString(2, ArteCIMA.Util.TextoUtil.patronBusqueda(busqueda));
+            if (idInstructor != null) {
+                ps.setInt(3, idInstructor);
+            }
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return mapResultSet(rs);
@@ -64,6 +110,30 @@ public class Grupo {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    public static boolean perteneceAlInstructorSesion(Integer idGrupo) {
+        if (!SesionUsuario.esInstructor()) {
+            return true;
+        }
+        Integer idInstructor = SesionUsuario.getIdInstructor();
+        if (idInstructor == null || idGrupo == null) {
+            return false;
+        }
+        String sql = "SELECT 1 FROM grupo g "
+                   + "INNER JOIN taller t ON t.id_taller = g.id_taller "
+                   + "WHERE g.id_grupo = ? AND t.id_instructor = ?";
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idGrupo);
+            ps.setInt(2, idInstructor);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error al validar grupo del instructor: " + ex.getMessage());
+            return false;
+        }
     }
 
     public boolean insertar() {

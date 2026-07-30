@@ -39,13 +39,36 @@ public class Acudiente {
     public void setCorreo(String correo) { this.correo = correo; }
 
     public static List<Acudiente> listar() {
-        String sql = "SELECT * FROM acudiente ORDER BY id_acudiente ASC";
+        Integer idInstructor = null;
+        if (SesionUsuario.esInstructor()) {
+            idInstructor = SesionUsuario.getIdInstructor();
+            if (idInstructor == null) {
+                return new ArrayList<>();
+            }
+        }
+
+        String sql;
+        if (idInstructor != null) {
+            sql = "SELECT DISTINCT a.* FROM acudiente a "
+                + "INNER JOIN estudiante e ON e.id_acudiente = a.id_acudiente "
+                + "INNER JOIN grupo g ON g.id_grupo = e.id_grupo "
+                + "INNER JOIN taller t ON t.id_taller = g.id_taller "
+                + "WHERE t.id_instructor = ? "
+                + "ORDER BY a.id_acudiente ASC";
+        } else {
+            sql = "SELECT * FROM acudiente ORDER BY id_acudiente ASC";
+        }
+
         List<Acudiente> lista = new ArrayList<>();
         try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                lista.add(mapResultSet(rs));
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            if (idInstructor != null) {
+                ps.setInt(1, idInstructor);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSet(rs));
+                }
             }
         } catch (SQLException ex) {
             System.err.println("Error al listar acudientes: " + ex.getMessage());
@@ -55,15 +78,36 @@ public class Acudiente {
     }
 
     public static Acudiente buscar(String criterio) {
-        String sql = "SELECT * FROM acudiente WHERE CAST(id_acudiente AS VARCHAR) = ? "
-                   + "OR num_documento = ? OR "
-                   + ArteCIMA.Util.TextoUtil.expresionSqlSinTildes("nombre_completo") + " LIKE ?";
+        Integer idInstructor = null;
+        if (SesionUsuario.esInstructor()) {
+            idInstructor = SesionUsuario.getIdInstructor();
+            if (idInstructor == null) {
+                return null;
+            }
+        }
+
+        String sql = "SELECT DISTINCT a.* FROM acudiente a ";
+        if (idInstructor != null) {
+            sql += "INNER JOIN estudiante e ON e.id_acudiente = a.id_acudiente "
+                 + "INNER JOIN grupo g ON g.id_grupo = e.id_grupo "
+                 + "INNER JOIN taller t ON t.id_taller = g.id_taller ";
+        }
+        sql += "WHERE (CAST(a.id_acudiente AS VARCHAR) = ? "
+             + "OR a.num_documento = ? OR "
+             + ArteCIMA.Util.TextoUtil.expresionSqlSinTildes("a.nombre_completo") + " LIKE ?)";
+        if (idInstructor != null) {
+            sql += " AND t.id_instructor = ?";
+        }
+
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             String busqueda = criterio.trim();
             ps.setString(1, busqueda);
             ps.setString(2, busqueda);
             ps.setString(3, ArteCIMA.Util.TextoUtil.patronBusqueda(busqueda));
+            if (idInstructor != null) {
+                ps.setInt(4, idInstructor);
+            }
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return mapResultSet(rs);

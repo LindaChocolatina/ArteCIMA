@@ -17,6 +17,7 @@ public class Taller {
     private String horario;
     private Integer idMetodo;
     private Integer idInstructor;
+    private String nombreInstructor;
     private Integer idAlianza;
 
     public Taller() {
@@ -70,6 +71,14 @@ public class Taller {
         this.idInstructor = idInstructor;
     }
 
+    public String getNombreInstructor() {
+        return nombreInstructor;
+    }
+
+    public void setNombreInstructor(String nombreInstructor) {
+        this.nombreInstructor = nombreInstructor;
+    }
+
     public Integer getIdAlianza() {
         return idAlianza;
     }
@@ -78,8 +87,12 @@ public class Taller {
         this.idAlianza = idAlianza;
     }
 
+    private static final String SQL_SELECT = "SELECT t.id_taller, t.nombre, t.tipo_arte, t.horario, "
+            + "t.id_metodo, t.id_instructor, t.id_alianza, i.nombre_completo AS nombre_instructor "
+            + "FROM taller t LEFT JOIN instructor i ON i.id_instructor = t.id_instructor";
+
     public static List<Taller> listar() {
-        String sql = "SELECT * FROM taller ORDER BY id_taller ASC";
+        String sql = SQL_SELECT + " ORDER BY t.id_taller ASC";
         List<Taller> lista = new ArrayList<>();
 
         try (Connection con = Conexion.getConexion();
@@ -101,9 +114,10 @@ public class Taller {
     }
 
     public static Taller buscar(String criterio) {
-        String sql = "SELECT * FROM taller WHERE CAST(id_taller AS VARCHAR) = ? "
-                   + "OR " + ArteCIMA.Util.TextoUtil.expresionSqlSinTildes("nombre") + " LIKE ? "
-                   + "OR " + ArteCIMA.Util.TextoUtil.expresionSqlSinTildes("tipo_arte") + " LIKE ?";
+        String sql = SQL_SELECT + " WHERE CAST(t.id_taller AS VARCHAR) = ? "
+                   + "OR " + ArteCIMA.Util.TextoUtil.expresionSqlSinTildes("t.nombre") + " LIKE ? "
+                   + "OR " + ArteCIMA.Util.TextoUtil.expresionSqlSinTildes("t.tipo_arte") + " LIKE ? "
+                   + "OR " + ArteCIMA.Util.TextoUtil.expresionSqlSinTildes("i.nombre_completo") + " LIKE ?";
 
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -113,6 +127,7 @@ public class Taller {
             ps.setString(1, busqueda);
             ps.setString(2, patron);
             ps.setString(3, patron);
+            ps.setString(4, patron);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -127,7 +142,7 @@ public class Taller {
     }
 
     public static Taller buscar(int id) {
-        String sql = "SELECT * FROM taller WHERE id_taller = ?";
+        String sql = SQL_SELECT + " WHERE t.id_taller = ?";
 
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -286,6 +301,7 @@ public class Taller {
 
         int idInstructor = rs.getInt("id_instructor");
         t.setIdInstructor(rs.wasNull() ? null : idInstructor);
+        t.setNombreInstructor(rs.getString("nombre_instructor"));
 
         int idAlianza = rs.getInt("id_alianza");
         t.setIdAlianza(rs.wasNull() ? null : idAlianza);

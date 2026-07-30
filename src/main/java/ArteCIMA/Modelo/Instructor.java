@@ -193,6 +193,50 @@ public class Instructor {
         return null;
     }
 
+    /**
+     * Resuelve el id_instructor vinculado a un usuario de login
+     * (mismo correo o mismo nombre completo que en la tabla instructor).
+     */
+    public static Integer resolverIdPorUsuario(String correo, String nombreCompleto) {
+        if (correo != null && !correo.isBlank()) {
+            String sql = "SELECT id_instructor FROM instructor WHERE lower(trim(correo)) = lower(trim(?))";
+            try (Connection con = Conexion.getConexion();
+                 PreparedStatement ps = con.prepareStatement(sql)) {
+                if (con == null) {
+                    return null;
+                }
+                ps.setString(1, correo.trim());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt("id_instructor");
+                    }
+                }
+            } catch (SQLException e) {
+                System.err.println("Error al resolver instructor por correo: " + e.getMessage());
+            }
+        }
+
+        if (nombreCompleto != null && !nombreCompleto.isBlank()) {
+            String sql = "SELECT id_instructor FROM instructor WHERE lower(trim(nombre_completo)) = lower(trim(?))";
+            try (Connection con = Conexion.getConexion();
+                 PreparedStatement ps = con.prepareStatement(sql)) {
+                if (con == null) {
+                    return null;
+                }
+                ps.setString(1, nombreCompleto.trim());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt("id_instructor");
+                    }
+                }
+            } catch (SQLException e) {
+                System.err.println("Error al resolver instructor por nombre: " + e.getMessage());
+            }
+        }
+
+        return null;
+    }
+
     public String insertarConValidacion() {
         if (numDocumento == null || numDocumento.trim().isEmpty()
                 || nombreCompleto == null || nombreCompleto.trim().isEmpty()
