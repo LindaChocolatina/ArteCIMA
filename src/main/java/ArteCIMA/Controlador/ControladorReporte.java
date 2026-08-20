@@ -23,11 +23,29 @@ public class ControladorReporte {
             ultimoMensaje = "Seleccione un tipo de reporte.";
             return null;
         }
+        if (!SesionUsuario.puedeGenerarReporte(tipo)) {
+            ultimoMensaje = "Su rol no puede generar este tipo de reporte.";
+            return null;
+        }
         ultimoResultado = Reporte.generar(tipo, filtros);
         ultimoMensaje = ultimoResultado.estaVacio()
                 ? "No se encontraron registros para los filtros indicados."
                 : "Reporte generado: " + ultimoResultado.getFilas().size() + " fila(s).";
         return ultimoResultado;
+    }
+
+    public String sugerirNombreArchivo() {
+        if (ultimoResultado == null) {
+            return "reporte_artecima.csv";
+        }
+        String base = ultimoResultado.getTitulo()
+                .toLowerCase()
+                .replace('á', 'a').replace('é', 'e').replace('í', 'i')
+                .replace('ó', 'o').replace('ú', 'u').replace('ñ', 'n')
+                .replaceAll("[^a-z0-9]+", "_")
+                .replaceAll("^_|_$", "");
+        String fecha = java.time.LocalDate.now().toString();
+        return (base.isBlank() ? "reporte" : base) + "_" + fecha + ".csv";
     }
 
     public boolean exportarCsv(File archivo) {
@@ -36,7 +54,7 @@ public class ControladorReporte {
             return false;
         }
         if (ultimoResultado == null || ultimoResultado.estaVacio()) {
-            ultimoMensaje = "Genere un reporte antes de exportar.";
+            ultimoMensaje = "Genere un reporte con datos antes de exportar.";
             return false;
         }
         if (archivo == null) {
