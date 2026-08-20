@@ -4,7 +4,9 @@ import ArteCIMA.Controlador.ControladorReporte;
 import ArteCIMA.Modelo.Grupo;
 import ArteCIMA.Modelo.Modulo;
 import ArteCIMA.Modelo.Reporte;
+import ArteCIMA.Modelo.SesionUsuario;
 import ArteCIMA.Modelo.Taller;
+import ArteCIMA.Util.CalendarioFecha;
 import ArteCIMA.Util.MensajesUI;
 import ArteCIMA.Util.PermisosUI;
 import ArteCIMA.Util.TemaCIMA;
@@ -15,6 +17,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -24,28 +28,37 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 public class FRMReportes extends JFrame {
 
+    private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final String TEXTO_SIN_FILTRO = "Sin filtro (elegir…)";
+
     private final ControladorReporte controlador = new ControladorReporte();
 
-    private final JComboBox<Reporte.Tipo> comboTipo = new JComboBox<>(Reporte.Tipo.values());
+    private final JComboBox<Reporte.Tipo> comboTipo = new JComboBox<>();
     private final JComboBox<ItemCombo> comboGrupo = new JComboBox<>();
     private final JComboBox<ItemCombo> comboTaller = new JComboBox<>();
-    private final JTextField txtFechaDesde = new JTextField(12);
-    private final JTextField txtFechaHasta = new JTextField(12);
+    private final JButton btnFechaDesde = new JButton();
+    private final JButton btnFechaHasta = new JButton();
+    private final JButton btnLimpiarDesde = new JButton("Limpiar");
+    private final JButton btnLimpiarHasta = new JButton("Limpiar");
     private final JLabel lblGrupo = new JLabel("Grupo:");
     private final JLabel lblTaller = new JLabel("Taller:");
-    private final JLabel lblFechaDesde = new JLabel("Desde (yyyy-MM-dd):");
-    private final JLabel lblFechaHasta = new JLabel("Hasta (yyyy-MM-dd):");
+    private final JLabel lblFechaDesde = new JLabel("Desde:");
+    private final JLabel lblFechaHasta = new JLabel("Hasta:");
+    private final JPanel panelDesde = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+    private final JPanel panelHasta = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
     private final JButton btnGenerar = new JButton("Generar reporte");
     private final JButton btnExportar = new JButton("Exportar CSV");
     private final JTable tabla = new JTable();
     private final JLabel lblEstado = new JLabel("Seleccione un reporte y pulse Generar.");
+
+    private LocalDate fechaDesde;
+    private LocalDate fechaHasta;
 
     public FRMReportes() {
         if (!PermisosUI.verificarAccesoModulo(this, Modulo.REPORTES)) {
@@ -54,10 +67,22 @@ public class FRMReportes extends JFrame {
         }
 
         construirInterfaz();
+        cargarTiposPermitidos();
         cargarCombos();
+        actualizarTextoFechas();
         actualizarFiltrosVisibles();
         comboTipo.addActionListener(e -> actualizarFiltrosVisibles());
 
+        btnFechaDesde.addActionListener(e -> abrirCalendario(true));
+        btnFechaHasta.addActionListener(e -> abrirCalendario(false));
+        btnLimpiarDesde.addActionListener(e -> {
+            fechaDesde = null;
+            actualizarTextoFechas();
+        });
+        btnLimpiarHasta.addActionListener(e -> {
+            fechaHasta = null;
+            actualizarTextoFechas();
+        });
         btnGenerar.addActionListener(e -> generarReporte());
         btnExportar.addActionListener(e -> exportarCsv());
 
@@ -93,17 +118,26 @@ public class FRMReportes extends JFrame {
         TemaCIMA.estilizarCombo(comboTipo);
         TemaCIMA.estilizarCombo(comboGrupo);
         TemaCIMA.estilizarCombo(comboTaller);
-        TemaCIMA.estilizarCampo(txtFechaDesde);
-        TemaCIMA.estilizarCampo(txtFechaHasta);
+        prepararBotonFecha(btnFechaDesde);
+        prepararBotonFecha(btnFechaHasta);
+        TemaCIMA.estilizarBotonSecundario(btnLimpiarDesde);
+        TemaCIMA.estilizarBotonSecundario(btnLimpiarHasta);
         TemaCIMA.estilizarBotonPrimario(btnGenerar);
         TemaCIMA.estilizarBotonSecundario(btnExportar);
+
+        panelDesde.setOpaque(false);
+        panelHasta.setOpaque(false);
+        panelDesde.add(btnFechaDesde);
+        panelDesde.add(btnLimpiarDesde);
+        panelHasta.add(btnFechaHasta);
+        panelHasta.add(btnLimpiarHasta);
 
         int fila = 0;
         agregarFila(panelFiltros, gbc, fila++, new JLabel("Tipo de reporte:"), comboTipo);
         agregarFila(panelFiltros, gbc, fila++, lblGrupo, comboGrupo);
         agregarFila(panelFiltros, gbc, fila++, lblTaller, comboTaller);
-        agregarFila(panelFiltros, gbc, fila++, lblFechaDesde, txtFechaDesde);
-        agregarFila(panelFiltros, gbc, fila++, lblFechaHasta, txtFechaHasta);
+        agregarFila(panelFiltros, gbc, fila++, lblFechaDesde, panelDesde);
+        agregarFila(panelFiltros, gbc, fila++, lblFechaHasta, panelHasta);
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
         panelBotones.setOpaque(false);
@@ -137,6 +171,12 @@ public class FRMReportes extends JFrame {
         setContentPane(fondo);
     }
 
+    private void prepararBotonFecha(JButton btn) {
+        btn.setFont(TemaCIMA.FUENTE_CAMPO);
+        btn.setPreferredSize(new Dimension(180, TemaCIMA.ALTO_CAMPO));
+        TemaCIMA.estilizarBotonSecundario(btn);
+    }
+
     private void agregarFila(JPanel panel, GridBagConstraints gbc, int fila, JLabel etiqueta, java.awt.Component campo) {
         gbc.gridwidth = 1;
         gbc.gridx = 0;
@@ -149,6 +189,20 @@ public class FRMReportes extends JFrame {
         gbc.gridx = 1;
         gbc.weightx = 1;
         panel.add(campo, gbc);
+    }
+
+    private void cargarTiposPermitidos() {
+        comboTipo.removeAllItems();
+        for (Reporte.Tipo tipo : Reporte.Tipo.values()) {
+            if (SesionUsuario.puedeGenerarReporte(tipo)) {
+                comboTipo.addItem(tipo);
+            }
+        }
+        if (comboTipo.getItemCount() == 0) {
+            lblEstado.setText("Su rol no tiene reportes disponibles.");
+            btnGenerar.setEnabled(false);
+            btnExportar.setEnabled(false);
+        }
     }
 
     private void cargarCombos() {
@@ -180,31 +234,55 @@ public class FRMReportes extends JFrame {
         lblTaller.setVisible(mostrarTaller);
         comboTaller.setVisible(mostrarTaller);
         lblFechaDesde.setVisible(mostrarFechas);
-        txtFechaDesde.setVisible(mostrarFechas);
+        panelDesde.setVisible(mostrarFechas);
         lblFechaHasta.setVisible(mostrarFechas);
-        txtFechaHasta.setVisible(mostrarFechas);
+        panelHasta.setVisible(mostrarFechas);
+    }
+
+    private void abrirCalendario(boolean esDesde) {
+        LocalDate inicial = esDesde
+                ? (fechaDesde != null ? fechaDesde : LocalDate.now())
+                : (fechaHasta != null ? fechaHasta : LocalDate.now());
+        CalendarioFecha.mostrar(this, inicial, fecha -> {
+            if (esDesde) {
+                fechaDesde = fecha;
+                if (fechaHasta != null && fechaHasta.isBefore(fechaDesde)) {
+                    fechaHasta = fechaDesde;
+                }
+            } else {
+                fechaHasta = fecha;
+                if (fechaDesde != null && fechaHasta.isBefore(fechaDesde)) {
+                    fechaDesde = fechaHasta;
+                }
+            }
+            actualizarTextoFechas();
+        });
+    }
+
+    private void actualizarTextoFechas() {
+        btnFechaDesde.setText(fechaDesde == null ? TEXTO_SIN_FILTRO : fechaDesde.format(FORMATO_FECHA));
+        btnFechaHasta.setText(fechaHasta == null ? TEXTO_SIN_FILTRO : fechaHasta.format(FORMATO_FECHA));
     }
 
     private void generarReporte() {
         Reporte.Tipo tipo = (Reporte.Tipo) comboTipo.getSelectedItem();
-        Reporte.Filtros filtros = new Reporte.Filtros();
-
-        try {
-            if (comboGrupo.isVisible()) {
-                filtros.setIdGrupo(((ItemCombo) comboGrupo.getSelectedItem()).id);
-            }
-            if (comboTaller.isVisible()) {
-                filtros.setIdTaller(((ItemCombo) comboTaller.getSelectedItem()).id);
-            }
-            if (txtFechaDesde.isVisible() && !txtFechaDesde.getText().trim().isEmpty()) {
-                filtros.setFechaDesde(java.sql.Date.valueOf(txtFechaDesde.getText().trim()));
-            }
-            if (txtFechaHasta.isVisible() && !txtFechaHasta.getText().trim().isEmpty()) {
-                filtros.setFechaHasta(java.sql.Date.valueOf(txtFechaHasta.getText().trim()));
-            }
-        } catch (IllegalArgumentException ex) {
-            MensajesUI.advertencia(this, "Revise el formato de fechas (yyyy-MM-dd).");
+        if (tipo == null) {
+            MensajesUI.advertencia(this, "No hay tipos de reporte disponibles para su rol.");
             return;
+        }
+
+        Reporte.Filtros filtros = new Reporte.Filtros();
+        if (comboGrupo.isVisible() && comboGrupo.getSelectedItem() != null) {
+            filtros.setIdGrupo(((ItemCombo) comboGrupo.getSelectedItem()).id);
+        }
+        if (comboTaller.isVisible() && comboTaller.getSelectedItem() != null) {
+            filtros.setIdTaller(((ItemCombo) comboTaller.getSelectedItem()).id);
+        }
+        if (panelDesde.isVisible() && fechaDesde != null) {
+            filtros.setFechaDesde(java.sql.Date.valueOf(fechaDesde));
+        }
+        if (panelHasta.isVisible() && fechaHasta != null) {
+            filtros.setFechaHasta(java.sql.Date.valueOf(fechaHasta));
         }
 
         Reporte.Resultado resultado = controlador.generar(tipo, filtros);
@@ -229,7 +307,7 @@ public class FRMReportes extends JFrame {
     private void exportarCsv() {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Guardar reporte CSV");
-        chooser.setSelectedFile(new File("reporte_artecima.csv"));
+        chooser.setSelectedFile(new File(controlador.sugerirNombreArchivo()));
         chooser.setFileFilter(new FileNameExtensionFilter("CSV (*.csv)", "csv"));
 
         if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
