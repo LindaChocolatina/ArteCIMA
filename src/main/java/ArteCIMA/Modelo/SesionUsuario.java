@@ -73,6 +73,39 @@ public class SesionUsuario {
         return esRol("Administrador");
     }
 
+    /**
+     * Tipos de reporte permitidos según el rol en sesión.
+     * Instructores y auxiliares: solo académicos; Contabilidad: financieros (+ becas).
+     */
+    public static boolean puedeGenerarReporte(Reporte.Tipo tipo) {
+        if (!puedeAcceder(Modulo.REPORTES) || tipo == null) {
+            return false;
+        }
+        if (esRol("Administrador") || esRol("Coordinador")) {
+            return true;
+        }
+        if (esRol("Instructor")) {
+            return tipo == Reporte.Tipo.ASISTENCIA_GRUPO
+                    || tipo == Reporte.Tipo.ESTUDIANTES_TALLER;
+        }
+        if (esRol("Contabilidad")) {
+            return tipo == Reporte.Tipo.PAGOS_INSTRUCTOR
+                    || tipo == Reporte.Tipo.MOVIMIENTOS
+                    || tipo == Reporte.Tipo.BECAS_ACTIVAS;
+        }
+        if (esRol("Administrativo")) {
+            return tipo == Reporte.Tipo.BECAS_ACTIVAS
+                    || tipo == Reporte.Tipo.ESTUDIANTES_TALLER
+                    || tipo == Reporte.Tipo.ASISTENCIA_GRUPO;
+        }
+        if (esRol("Auxiliar")) {
+            return tipo == Reporte.Tipo.ASISTENCIA_GRUPO
+                    || tipo == Reporte.Tipo.ESTUDIANTES_TALLER
+                    || tipo == Reporte.Tipo.BECAS_ACTIVAS;
+        }
+        return false;
+    }
+
     /** @deprecated Usar {@link #puedeModificar(Modulo#INSTRUCTORES)} */
     @Deprecated
     public static boolean puedeModificarInstructores() {

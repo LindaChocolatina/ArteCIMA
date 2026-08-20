@@ -93,14 +93,17 @@ public class Reporte {
     }
 
     private static Resultado asistenciaPorGrupo(Filtros filtros) {
+        Integer idInstructor = idInstructorSiAplica();
         String sql = "SELECT e.nombre_completo, g.nombre AS grupo, a.fecha, "
                 + "CASE WHEN a.presente THEN 'Sí' ELSE 'No' END AS presente "
                 + "FROM asistencia a "
                 + "JOIN estudiante e ON a.id_estudiante = e.id_estudiante "
                 + "JOIN grupo g ON a.id_grupo = g.id_grupo "
+                + "JOIN taller t ON g.id_taller = t.id_taller "
                 + "WHERE (? IS NULL OR a.id_grupo = ?) "
                 + "AND (? IS NULL OR a.fecha >= ?) "
                 + "AND (? IS NULL OR a.fecha <= ?) "
+                + "AND (? IS NULL OR t.id_instructor = ?) "
                 + "ORDER BY a.fecha DESC, g.nombre, e.nombre_completo";
 
         String[] columnas = {"Estudiante", "Grupo", "Fecha", "Presente"};
@@ -114,6 +117,7 @@ public class Reporte {
                 bindEnteroOpcional(ps, 1, 2, filtros.getIdGrupo());
                 bindFechaOpcional(ps, 3, 4, filtros.getFechaDesde());
                 bindFechaOpcional(ps, 5, 6, filtros.getFechaHasta());
+                bindEnteroOpcional(ps, 7, 8, idInstructor);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         filas.add(new String[]{
@@ -240,12 +244,14 @@ public class Reporte {
     }
 
     private static Resultado estudiantesPorTaller(Filtros filtros) {
+        Integer idInstructor = idInstructorSiAplica();
         String sql = "SELECT t.nombre AS taller, t.tipo_arte, g.nombre AS grupo, "
                 + "e.nombre_completo, e.num_documento, COALESCE(e.tipo_beneficio, '—') AS beneficio "
                 + "FROM estudiante e "
                 + "JOIN grupo g ON e.id_grupo = g.id_grupo "
                 + "JOIN taller t ON g.id_taller = t.id_taller "
                 + "WHERE (? IS NULL OR t.id_taller = ?) "
+                + "AND (? IS NULL OR t.id_instructor = ?) "
                 + "ORDER BY t.nombre, g.nombre, e.nombre_completo";
 
         String[] columnas = {"Taller", "Tipo arte", "Grupo", "Estudiante", "Documento", "Beneficio"};
@@ -257,6 +263,7 @@ public class Reporte {
             }
             try (PreparedStatement ps = con.prepareStatement(sql)) {
                 bindEnteroOpcional(ps, 1, 2, filtros.getIdTaller());
+                bindEnteroOpcional(ps, 3, 4, idInstructor);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         filas.add(new String[]{
@@ -274,6 +281,11 @@ public class Reporte {
             System.err.println("Error en reporte de estudiantes: " + ex.getMessage());
         }
         return new Resultado("Estudiantes por taller", columnas, filas);
+    }
+
+    /** Si hay instructor en sesión, los reportes académicos quedan limitados a sus talleres. */
+    private static Integer idInstructorSiAplica() {
+        return SesionUsuario.esInstructor() ? SesionUsuario.getIdInstructor() : null;
     }
 
     private static void bindEnteroOpcional(PreparedStatement ps, int idxNull, int idxValor, Integer valor)
